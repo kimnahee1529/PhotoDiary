@@ -16,7 +16,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object GoogleWeatherRetrofitModule {
-    private const val BASE_URL = "https://weather.googleapis.com"
+    private const val BASE_URL = "https://weather.googleapis.com/"
 
     @Singleton
     @Provides
