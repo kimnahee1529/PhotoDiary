@@ -13,6 +13,11 @@ import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
+/**
+ * remote layer
+ * di for google weather api retrofit
+ * @deprecated not used
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object GoogleWeatherRetrofitModule {
