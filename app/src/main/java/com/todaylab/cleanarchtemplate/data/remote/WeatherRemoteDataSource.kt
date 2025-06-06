@@ -8,5 +8,5 @@ import com.todaylab.cleanarchtemplate.data.model.WeatherEntity
  * weather remote data source interface
  */
 interface WeatherRemoteDataSource {
-    fun getCurrentWeather(): WeatherEntity
+    suspend fun getCurrentWeather(lat: Double, long: Double): WeatherEntity
 }
