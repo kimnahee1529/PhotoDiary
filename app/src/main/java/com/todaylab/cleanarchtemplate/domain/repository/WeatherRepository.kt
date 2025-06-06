@@ -7,5 +7,5 @@ import com.todaylab.cleanarchtemplate.domain.model.Weather
  * weather repository interface
  */
 interface WeatherRepository {
-    fun getCurrentWeather(): Weather
+    suspend fun getCurrentWeather(lat: Double, long: Double): Weather
 }
