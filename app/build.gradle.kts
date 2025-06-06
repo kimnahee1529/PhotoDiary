@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.dagger.hilt.android)
 }
 
 android {
@@ -16,6 +17,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String",
+            "WEATHER_API_KEY",
+            "\"${project.properties["WEATHER_API_KEY"]}\""
+        )
     }
 
     buildTypes {
@@ -56,4 +63,13 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.navigation.compose)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.serialization)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
+    implementation(libs.gson)
+    implementation(libs.retrofit.gson)
+    implementation(libs.google.dagger.hilt)
+    implementation(libs.google.dagger.hilt.compiler)
 }
