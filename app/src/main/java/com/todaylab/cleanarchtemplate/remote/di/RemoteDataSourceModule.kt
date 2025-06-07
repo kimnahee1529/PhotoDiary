@@ -8,6 +8,10 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/**
+ * remote layer
+ * di for remote data sources
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RemoteDataSourceModule {

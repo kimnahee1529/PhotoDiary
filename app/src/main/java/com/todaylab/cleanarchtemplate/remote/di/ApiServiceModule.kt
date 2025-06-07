@@ -22,7 +22,7 @@ object ApiServiceModule {
      */
     @Provides
     @Singleton
-    fun provideGoogleWeatherApiService(retrofit: Retrofit): GoogleWeatherApiService =
+    fun provideGoogleWeatherApiService(@GoogleWeatherRetrofit retrofit: Retrofit): GoogleWeatherApiService =
         retrofit.create(GoogleWeatherApiService::class.java)
 
     /**
@@ -30,6 +30,6 @@ object ApiServiceModule {
      */
     @Provides
     @Singleton
-    fun provideOpenWeatherApiService(retrofit: Retrofit): OpenWeatherApiService =
+    fun provideOpenWeatherApiService(@OpenWeatherRetrofit retrofit: Retrofit): OpenWeatherApiService =
         retrofit.create(OpenWeatherApiService::class.java)
 }
