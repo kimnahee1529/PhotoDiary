@@ -13,7 +13,7 @@ import com.todaylab.cleanarchtemplate.domain.model.Weather
  * from data to domain
  */
 internal fun WeatherEntity.toDomain(): Weather = Weather(
-    lang = this.lang,
+    long = this.long,
     lat = this.lat,
     date = this.date,
     summary = this.summary,
@@ -28,7 +28,7 @@ internal fun WeatherEntity.toDomain(): Weather = Weather(
  * from domain to data
  */
 internal fun Weather.toData(): WeatherEntity = WeatherEntity(
-    lang = this.lang,
+    long = this.long,
     lat = this.lat,
     date = this.date,
     summary = this.summary,

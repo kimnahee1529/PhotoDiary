@@ -7,7 +7,7 @@ import java.util.Date
  * weather model
  */
 data class WeatherEntity(
-    val lang: Double,
+    val long: Double,
     val lat: Double,
     val date: Date = Date(),
     val summary: String? = null,

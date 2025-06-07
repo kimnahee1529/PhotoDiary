@@ -7,7 +7,7 @@ import java.util.Date
  * weather model
  */
 data class Weather(
-    val lang: Double,
+    val long: Double,
     val lat: Double,
     val date: Date = Date(),
     val summary: String? = null,
@@ -19,7 +19,7 @@ data class Weather(
     override fun equals(other: Any?): Boolean {
         if (other !is Weather) return false
         // Weather is equal if date & location is equal
-        return (this.lang == other.lang
+        return (this.long == other.long
                 && this.lat == other.lat
                 && this.date == other.date)
     }

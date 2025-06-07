@@ -11,6 +11,6 @@ class GetCurrentWeatherUseCase @Inject constructor(
     private val weatherRepository: WeatherRepository
 
 ) {
-    suspend operator fun invoke(lat: Double, lang: Double) =
-        weatherRepository.getCurrentWeather(lat, lang)
+    suspend operator fun invoke(lat: Double, long: Double) =
+        weatherRepository.getCurrentWeather(lat, long)
 }

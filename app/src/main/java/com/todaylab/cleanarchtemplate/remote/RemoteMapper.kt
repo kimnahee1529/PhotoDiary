@@ -13,8 +13,8 @@ import java.util.Date
  * google weather api response to data
  * @deprecated not used
  */
-fun WeatherGoogleWeatherResponse.toData(lang: Double, lat: Double): WeatherEntity = WeatherEntity(
-    lang = lang,
+fun WeatherGoogleWeatherResponse.toData(long: Double, lat: Double): WeatherEntity = WeatherEntity(
+    long = long,
     lat = lat,
     date = Date(),
     main = this.weatherCondition.type,
