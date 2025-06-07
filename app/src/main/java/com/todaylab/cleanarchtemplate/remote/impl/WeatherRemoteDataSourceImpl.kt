@@ -17,10 +17,10 @@ class WeatherRemoteDataSourceImpl @Inject constructor(
 ) : WeatherRemoteDataSource {
     override suspend fun getCurrentWeather(lat: Double, long: Double): WeatherEntity {
         // google weather api call
-        val response = googleWeatherApiService.getCurrentWeather(lat = lat, long = long)
+        // val response = googleWeatherApiService.getCurrentWeather(lat = lat, long = long)
 
         // open weather api call
-        // val response = openWeatherApiService.getCurrentWeather(lat = lat, long = long)
+        val response = openWeatherApiService.getCurrentWeather(lat = lat, long = long)
         return response.body()?.toData(lat, long) ?: throw Exception(response.message())
     }
 }
