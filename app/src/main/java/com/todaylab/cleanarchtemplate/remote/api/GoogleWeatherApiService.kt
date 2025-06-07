@@ -11,7 +11,7 @@ import retrofit2.http.Query
  * google weather api service interface
  */
 interface GoogleWeatherApiService {
-    @GET("currentConditions:lookup?")
+    @GET("currentConditions:lookup")
     suspend fun getCurrentWeather(
         @Query("key") apiKey: String = BuildConfig.GOOGLE_MAP_API_KEY,
         @Query("location.latitude") lat: Double,
