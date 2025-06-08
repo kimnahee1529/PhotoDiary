@@ -10,7 +10,6 @@ data class Weather(
     val long: Double,
     val lat: Double,
     val date: Date = Date(),
-    val summary: String? = null,
     val main: String,
     val description: String,
     val maxTemp: Double,
