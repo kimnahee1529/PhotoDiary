@@ -4,10 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.todaylab.cleanarchtemplate.local.model.WEATHER_ID
 import com.todaylab.cleanarchtemplate.local.model.WeatherLocal
-
-// id of singleton weather entity
-const val WEATHER_ENTITY_ID = 0
 
 /**
  * local layer
@@ -23,7 +21,7 @@ interface WeatherDao {
     @Query(
         "SELECT * " +
                 "FROM WeatherLocal " +
-                "WHERE id= $WEATHER_ENTITY_ID "
+                "WHERE id= $WEATHER_ID "
     )
     fun getWeather(): WeatherLocal?
 
@@ -39,7 +37,7 @@ interface WeatherDao {
     @Query(
         "DELETE " +
                 "FROM WeatherLocal " +
-                "WHERE id= $WEATHER_ENTITY_ID "
+                "WHERE id= $WEATHER_ID "
     )
     fun deleteWeather()
 }
