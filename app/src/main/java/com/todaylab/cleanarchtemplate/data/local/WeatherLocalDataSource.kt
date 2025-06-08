@@ -7,6 +7,6 @@ import com.todaylab.cleanarchtemplate.data.model.WeatherEntity
  * weather local data source interface
  */
 interface WeatherLocalDataSource {
-    fun getCurrentWeather(): WeatherEntity
-    fun saveCurrentWeather(weather: WeatherEntity)
+    suspend fun getCurrentWeather(lat: Double, long: Double): WeatherEntity?
+    suspend fun saveCurrentWeather(weather: WeatherEntity): Boolean
 }

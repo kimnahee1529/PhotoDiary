@@ -17,7 +17,7 @@ class WeatherRepositoryImpl @Inject constructor(
 ) : WeatherRepository {
     override suspend fun getCurrentWeather(lat: Double, long: Double): Weather {
         // get weather from local data source if exists
-        val localWeather = weatherLocalDataSource.getCurrentWeather()
+        val localWeather = weatherLocalDataSource.getCurrentWeather(lat, long)
         if (localWeather != null) return localWeather.toDomain()
 
         // get weather from remote data source if not exists
