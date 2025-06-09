@@ -7,7 +7,6 @@ import kotlinx.serialization.SerialName
  * open weather api response model
  */
 data class WeatherOpenWeatherResponse(
-    val current: Current,
     val daily: List<Daily>,
     val lat: Double,
     val lon: Double,
@@ -15,36 +14,6 @@ data class WeatherOpenWeatherResponse(
     @SerialName("timezone_offset")
     val timezoneOffset: Int
 ) {
-    data class Current(
-        val clouds: Int,
-        @SerialName("dew_point")
-        val dewPoint: Double,
-        val dt: Int,
-        @SerialName("feels_like")
-        val feelsLike: Double,
-        val humidity: Int,
-        val pressure: Int,
-        val sunrise: Int,
-        val sunset: Int,
-        val temp: Double,
-        val uvi: Double,
-        val visibility: Int,
-        val weather: List<Weather>,
-        @SerialName("wind_deg")
-        val windDeg: Int,
-        @SerialName("wind_gust")
-        val windGust: Double,
-        @SerialName("wind_speed")
-        val windSpeed: Double
-    ) {
-        data class Weather(
-            val description: String,
-            val icon: String,
-            val id: Int,
-            val main: String
-        )
-    }
-
     data class Daily(
         val clouds: Int,
         @SerialName("dew_point")
