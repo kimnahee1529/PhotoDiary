@@ -22,4 +22,11 @@ data class Weather(
                 && this.lat == other.lat
                 && this.date == other.date)
     }
+
+    override fun hashCode(): Int {
+        var result = long.hashCode()
+        result = 31 * result + lat.hashCode()
+        result = 31 * result + date.hashCode()
+        return result
+    }
 }
