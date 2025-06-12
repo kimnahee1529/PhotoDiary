@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.dagger.hilt.android)
+    kotlin("kapt")
 }
 
 android {
@@ -42,6 +43,7 @@ android {
         jvmTarget = "11"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 }
@@ -56,6 +58,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.google.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -70,6 +73,17 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.gson)
     implementation(libs.retrofit.gson)
+
+    //hilt
     implementation(libs.google.dagger.hilt)
-    implementation(libs.google.dagger.hilt.compiler)
+    kapt(libs.google.dagger.hilt.compiler)
+//    implementation(libs.google.dagger.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+
+    implementation(libs.kotlinx.coroutines.play.services)
+
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    kapt(libs.room.compiler)
+
 }

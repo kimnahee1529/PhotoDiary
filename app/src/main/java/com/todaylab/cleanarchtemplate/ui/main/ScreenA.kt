@@ -1,4 +1,4 @@
-package com.todaylab.cleanarchtemplate.presentation.main
+package com.todaylab.cleanarchtemplate.ui.main
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,11 +16,11 @@ import androidx.navigation.NavHostController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScreenB(navController: NavHostController) {
+fun ScreenA(navController: NavHostController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Screen B") },
+                title = { Text("Screen A") },
             )
         }
     ) { innerPadding ->
