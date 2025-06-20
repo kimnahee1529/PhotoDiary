@@ -24,7 +24,6 @@ object OpenWeatherRetrofitModule {
 
     @Singleton
     @Provides
-    @OpenWeatherRetrofit
     fun provideRetrofit(
         httpClient: OkHttpClient
     ): Retrofit =

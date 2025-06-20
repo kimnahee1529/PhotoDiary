@@ -1,6 +1,5 @@
 package com.todaylab.cleanarchtemplate.remote.di
 
-import com.todaylab.cleanarchtemplate.remote.api.GoogleWeatherApiService
 import com.todaylab.cleanarchtemplate.remote.api.OpenWeatherApiService
 import dagger.Module
 import dagger.Provides
@@ -17,19 +16,10 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object ApiServiceModule {
     /**
-     * provide google weather api service
-     * @deprecated not used
-     */
-    @Provides
-    @Singleton
-    fun provideGoogleWeatherApiService(@GoogleWeatherRetrofit retrofit: Retrofit): GoogleWeatherApiService =
-        retrofit.create(GoogleWeatherApiService::class.java)
-
-    /**
      * provide open weather api service
      */
     @Provides
     @Singleton
-    fun provideOpenWeatherApiService(@OpenWeatherRetrofit retrofit: Retrofit): OpenWeatherApiService =
+    fun provideOpenWeatherApiService(retrofit: Retrofit): OpenWeatherApiService =
         retrofit.create(OpenWeatherApiService::class.java)
 }
