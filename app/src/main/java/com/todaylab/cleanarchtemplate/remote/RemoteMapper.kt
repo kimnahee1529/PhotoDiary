@@ -27,12 +27,15 @@ fun WeatherGoogleWeatherResponse.toData(long: Double, lat: Double): WeatherEntit
 /**
  * open weather api response to data
  */
+// todo: change response mapper
 fun WeatherOpenWeatherResponse.toData(long: Double, lat: Double): WeatherEntity = WeatherEntity(
     long = long,
     lat = lat,
     date = Date(),
-    main = this.current.weather.first().main,
-    description = this.current.weather.first().description,
+//    main = this.daily.weather.first().main,
+//    description = this.current.weather.first().description,
+    main = "main",
+    description = "description",
     maxTemp = this.daily.first().temp.max,
     minTemp = this.daily.first().temp.min
 )
