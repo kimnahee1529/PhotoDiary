@@ -9,6 +9,9 @@ import com.todaylab.cleanarchtemplate.domain.model.Weather
  */
 internal fun WeatherEntity.toDomain(): Weather {
     return Weather(
+        date = this.date,
+        lat = this.lat,
+        lon = this.lon,
         main = this.weatherMain,
         description = this.weatherDesc,
         icon = this.weatherIcon,
@@ -17,6 +20,9 @@ internal fun WeatherEntity.toDomain(): Weather {
 
 internal fun Weather.toData(): WeatherEntity {
     return WeatherEntity(
+        date = this.date,
+        lat = this.lat,
+        lon = this.lon,
         cityName = "",
         temp = 0.0,
         weatherMain = this.main,

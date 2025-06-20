@@ -10,5 +10,4 @@ class DtoConverter {
 
     @TypeConverter
     fun dateToTimestamp(date: Date): Long = date.time
-
 }

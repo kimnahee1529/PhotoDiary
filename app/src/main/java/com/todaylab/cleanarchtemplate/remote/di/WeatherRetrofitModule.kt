@@ -1,6 +1,8 @@
 package com.todaylab.cleanarchtemplate.remote.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.todaylab.cleanarchtemplate.BuildConfig
+import com.todaylab.cleanarchtemplate.remote.api.interceptor.ApiKeyInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,8 +21,9 @@ import javax.inject.Singleton
  */
 @Module
 @InstallIn(SingletonComponent::class)
-object OpenWeatherRetrofitModule {
-    private const val BASE_URL = "https://api.openweathermap.org/data/3.0/"
+object WeatherRetrofitModule {
+    private const val BASE_URL = "https://api.openweathermap.org/data/2.5/"
+    private const val APP_KEY = BuildConfig.WEATHER_API_KEY
 
     @Singleton
     @Provides
@@ -31,7 +34,8 @@ object OpenWeatherRetrofitModule {
             .Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
-            .client(httpClient)
+            .client(
+                httpClient.newBuilder().addInterceptor(ApiKeyInterceptor("appid", APP_KEY)).build()
+            )
             .build()
 }
-

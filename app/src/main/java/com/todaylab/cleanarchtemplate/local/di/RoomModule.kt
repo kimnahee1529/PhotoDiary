@@ -14,7 +14,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal object LocalRoomModule {
+internal object RoomModule {
 
     @Provides
     @Singleton
@@ -24,10 +24,10 @@ internal object LocalRoomModule {
             AppDatabase::class.java,
             RoomConstant.ROOM_DB_NAME
         )
-            .fallbackToDestructiveMigration()
+            .fallbackToDestructiveMigration(false)
             .build()
 
     @Provides
     @Singleton
-    fun provideHeyDealerWeatherDao(database: AppDatabase): WeatherDao = database.weatherDao()
+    fun provideWeatherDao(database: AppDatabase): WeatherDao = database.weatherDao()
 }

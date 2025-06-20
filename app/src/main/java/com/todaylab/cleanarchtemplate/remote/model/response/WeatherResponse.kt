@@ -1,6 +1,6 @@
 package com.todaylab.cleanarchtemplate.remote.model.response
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
 
 data class WeatherResponse(
     val coord: Coord,
@@ -49,7 +49,7 @@ data class Wind(
 )
 
 data class Rain(
-    @SerializedName("1h")
+    @SerialName("1h")
     val oneHour: Double
 )
 

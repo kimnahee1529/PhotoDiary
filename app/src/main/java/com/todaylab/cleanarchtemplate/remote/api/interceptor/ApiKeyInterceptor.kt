@@ -3,7 +3,11 @@ package com.todaylab.cleanarchtemplate.remote.api.interceptor
 import okhttp3.Interceptor
 import okhttp3.Response
 
+/**
+ * 쿼리에 app key 추가하는 인터셉터
+ */
 class ApiKeyInterceptor(
+    private val apiKeyName: String,
     private val apiKey: String
 ) : Interceptor {
 
@@ -11,9 +15,8 @@ class ApiKeyInterceptor(
         val originalRequest = chain.request()
         val originalUrl = originalRequest.url
 
-        // 쿼리에 appid 추가
         val newUrl = originalUrl.newBuilder()
-            .addQueryParameter("appid", apiKey)
+            .addQueryParameter(apiKeyName, apiKey)
             .build()
 
         val newRequest = originalRequest.newBuilder()
