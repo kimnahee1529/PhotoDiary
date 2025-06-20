@@ -1,37 +1,37 @@
-package com.todaylab.cleanarchtemplate.data
+package com.todaylab.cleanarchtemplate.local
 
 import com.todaylab.cleanarchtemplate.data.model.WeatherEntity
-import com.todaylab.cleanarchtemplate.domain.model.Weather
+import com.todaylab.cleanarchtemplate.local.model.WeatherLocal
 
 /**
- * data layer
- * model mapper extension functions
+ * local layer
+ * model mappers
  */
 
 /**
  * weather model mapper
- * from data to domain
+ * from local to data
  */
-internal fun WeatherEntity.toDomain(): Weather = Weather(
+internal fun WeatherLocal.toData(): WeatherEntity = WeatherEntity(
     long = this.long,
     lat = this.lat,
     date = this.date,
     main = this.main,
     description = this.description,
     maxTemp = this.maxTemp,
-    minTemp = this.minTemp
+    minTemp = this.minTemp,
 )
 
 /**
  * weather model mapper
- * from domain to data
+ * from data to local
  */
-internal fun Weather.toData(): WeatherEntity = WeatherEntity(
+internal fun WeatherEntity.toLocal(): WeatherLocal = WeatherLocal(
     long = this.long,
     lat = this.lat,
     date = this.date,
     main = this.main,
     description = this.description,
     maxTemp = this.maxTemp,
-    minTemp = this.minTemp
+    minTemp = this.minTemp,
 )
