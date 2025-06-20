@@ -15,3 +15,6 @@ import com.todaylab.cleanarchtemplate.local.model.WeatherLocal
 abstract class AppDatabase : RoomDatabase() {
     abstract fun weatherDao(): WeatherDao
 }
+
+// todo: fix build warning
+// Schema export directory was not provided to the annotation processor so Room cannot export the schema. You can either provide `room.schemaLocation` annotation processor argument by applying the Room Gradle plugin (id 'androidx.room') OR set exportSchema to false.
