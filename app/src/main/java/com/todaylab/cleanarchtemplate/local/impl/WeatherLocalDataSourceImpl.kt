@@ -6,6 +6,7 @@ import com.todaylab.cleanarchtemplate.local.model.BirthdayLocal
 import com.todaylab.cleanarchtemplate.local.room.dao.WeatherDao
 import javax.inject.Inject
 
+
 class WeatherLocalDataSourceImpl @Inject constructor(
     private val weatherDao: WeatherDao
 ): WeatherLocalDataSource {

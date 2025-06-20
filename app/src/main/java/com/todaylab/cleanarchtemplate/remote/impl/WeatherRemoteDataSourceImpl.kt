@@ -2,9 +2,8 @@ package com.todaylab.cleanarchtemplate.remote.impl
 
 import com.todaylab.cleanarchtemplate.data.model.WeatherEntity
 import com.todaylab.cleanarchtemplate.data.remote.WeatherRemoteDataSource
-import com.todaylab.cleanarchtemplate.domain.model.Weather
-import com.todaylab.cleanarchtemplate.remote.toData
 import com.todaylab.cleanarchtemplate.remote.api.WeatherApiService
+import com.todaylab.cleanarchtemplate.remote.toData
 import javax.inject.Inject
 
 class WeatherRemoteDataSourceImpl @Inject constructor(
@@ -21,7 +20,4 @@ class WeatherRemoteDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun saveWeather(weather: Weather) {
-
-    }
 }

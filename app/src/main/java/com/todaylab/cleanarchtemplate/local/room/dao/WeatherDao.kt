@@ -10,7 +10,7 @@ import com.todaylab.cleanarchtemplate.local.model.WeatherLocal
 @Dao
 interface WeatherDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertWeather(birthday: BirthdayLocal)
+    suspend fun insertWeather(weatherLocal: WeatherLocal)
 
     @Query("SELECT * FROM user_weather WHERE userId = :userId")
     suspend fun getWeather(userId: String): WeatherLocal?

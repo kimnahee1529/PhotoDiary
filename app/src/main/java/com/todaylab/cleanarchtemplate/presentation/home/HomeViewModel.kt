@@ -1,12 +1,15 @@
-package com.todaylab.cleanarchtemplate.presentation.weather
+package com.todaylab.cleanarchtemplate.presentation.home
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.LocationServices
+import com.todaylab.cleanarchtemplate.domain.usecase.GetBirthDateUseCase
 import com.todaylab.cleanarchtemplate.domain.usecase.GetWeatherUseCase
+import com.todaylab.cleanarchtemplate.domain.usecase.SaveBirthDateUseCase
 import com.todaylab.cleanarchtemplate.domain.usecase.SaveWeatherUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,12 +21,18 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
-class WeatherViewModel @Inject constructor(
+class HomeViewModel @Inject constructor(
     private val getWeatherUseCase: GetWeatherUseCase,
-    private val saveWeatherUseCase: SaveWeatherUseCase
+    private val saveWeatherUseCase: SaveWeatherUseCase,
+    private val saveBirthDateUseCase: SaveBirthDateUseCase,
+    private val getBirthDateUseCase: GetBirthDateUseCase
 ) : ViewModel() {
     private val _weatherUiState = MutableStateFlow(WeatherUiState())
     val weatherUiState: StateFlow<WeatherUiState> = _weatherUiState.asStateFlow()
+
+    private val _birthDateState = MutableStateFlow<BirthdayUiState>(BirthdayUiState())
+    val birthDateState: StateFlow<BirthdayUiState> = _birthDateState.asStateFlow()
+
 
     init {
         loadWeather(lat = 37.5, lon = 127.0)
@@ -82,5 +91,61 @@ class WeatherViewModel @Inject constructor(
             }
         }
     }
+
+    fun saveBirthDate(year: String, month: String, day: String) {
+        viewModelScope.launch {
+            saveBirthDateUseCase(year, month, day)
+        }
+    }
+
+    fun loadBirthDate() {
+        viewModelScope.launch {
+            _birthDateState.update { it.copy(isLoading = true) }
+
+            try {
+                val birthDateString: String? = getBirthDateUseCase()
+                Log.e("확인", "birthDate: $birthDateString")
+                if (!birthDateString.isNullOrBlank()) {
+                    val parts = birthDateString.split("-")
+                    if (parts.size == 3) {
+                        _birthDateState.update {
+                            it.copy(
+                                year = parts[0],
+                                month = parts[1],
+                                day = parts[2],
+                                isLoading = false,
+                                errorMessage = null
+                            )
+                        }
+                    } else {
+                        _birthDateState.update {
+                            it.copy(
+                                isLoading = false,
+                                errorMessage = "잘못된 생년월일 형식입니다."
+                            )
+                        }
+                    }
+                } else {
+                    _birthDateState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = "저장된 생년월일이 없습니다."
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                _birthDateState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = e.message ?: "불러오기 오류"
+                    )
+                }
+            }
+        }
+    }
+
+
+
+
 
 }

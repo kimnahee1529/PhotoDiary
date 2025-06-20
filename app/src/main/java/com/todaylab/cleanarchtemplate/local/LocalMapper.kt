@@ -15,7 +15,7 @@ internal fun WeatherLocal.toData(): WeatherEntity {
 
 internal fun WeatherEntity.toLocal(): WeatherLocal {
     return WeatherLocal(
-        id = 0,
+        userId = "0",
         main = this.weatherMain,
         description = this.weatherDesc,
         icon = this.weatherIcon,

@@ -2,7 +2,7 @@ package com.todaylab.cleanarchtemplate.presentation.navigation
 
 sealed class AppRoute(val route: String) {
     object Main : AppRoute("main")
-    object ScreenA : AppRoute("screen_a")
+    object LuckyResult : AppRoute("LuckyResult")
     object ScreenB : AppRoute("screen_b")
     object Fortune : AppRoute("fortune")
 

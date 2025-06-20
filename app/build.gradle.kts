@@ -86,4 +86,7 @@ dependencies {
     implementation(libs.room.ktx)
     kapt(libs.room.compiler)
 
+    implementation(libs.datastore.preferences)
+
+    implementation(libs.coil.compose)
 }

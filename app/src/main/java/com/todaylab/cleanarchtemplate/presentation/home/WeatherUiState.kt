@@ -1,4 +1,4 @@
-package com.todaylab.cleanarchtemplate.presentation.weather
+package com.todaylab.cleanarchtemplate.presentation.home
 
 import com.todaylab.cleanarchtemplate.domain.model.Weather
 

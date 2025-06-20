@@ -4,10 +4,11 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.todaylab.cleanarchtemplate.local.model.BirthdayLocal
+import com.todaylab.cleanarchtemplate.local.model.WeatherLocal
 import com.todaylab.cleanarchtemplate.local.room.dao.WeatherDao
 
 @Database(
-    entities = [BirthdayLocal::class],
+    entities = [WeatherLocal::class],
     version = RoomConstant.ROOM_VERSION
 )
 
@@ -16,6 +17,6 @@ import com.todaylab.cleanarchtemplate.local.room.dao.WeatherDao
 )
 
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun movieDao(): WeatherDao
+    abstract fun weatherDao(): WeatherDao
 
 }

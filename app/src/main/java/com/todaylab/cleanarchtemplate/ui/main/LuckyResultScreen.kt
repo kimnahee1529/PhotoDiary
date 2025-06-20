@@ -14,13 +14,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 
+@Composable
+fun LuckyResultRoute(
+    navController: NavHostController
+){
+    LuckyResultScreen()
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScreenA(navController: NavHostController) {
+fun LuckyResultScreen(
+
+) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Screen A") },
+                title = { Text("오늘 행운의 숫자는? ☘") },
             )
         }
     ) { innerPadding ->
@@ -32,7 +40,7 @@ fun ScreenA(navController: NavHostController) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("ScreenA")
+            Text("LuckyResultScreen")
         }
     }
 }
