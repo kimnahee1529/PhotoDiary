@@ -9,7 +9,6 @@ import javax.inject.Inject
  */
 class GetCurrentWeatherUseCase @Inject constructor(
     private val weatherRepository: WeatherRepository
-
 ) {
     suspend operator fun invoke(lat: Double, long: Double) =
         weatherRepository.getCurrentWeather(lat, long)
