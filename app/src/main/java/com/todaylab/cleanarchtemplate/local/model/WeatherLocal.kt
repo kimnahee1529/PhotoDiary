@@ -12,7 +12,7 @@ const val WEATHER_ID = 0
  * weather local model
  * room db entity
  */
-@Entity
+@Entity(tableName = "user_weather")
 data class WeatherLocal(
     @PrimaryKey val id: Int = WEATHER_ID,
     val long: Double,
@@ -20,6 +20,5 @@ data class WeatherLocal(
     val date: Date,
     val main: String,
     val description: String,
-    val maxTemp: Double,
-    val minTemp: Double
+    val icon: String
 )

@@ -7,10 +7,6 @@ import com.todaylab.cleanarchtemplate.domain.model.Weather
 import com.todaylab.cleanarchtemplate.domain.repository.WeatherRepository
 import javax.inject.Inject
 
-/**
- * data layer
- * weather repository implementation
- */
 class WeatherRepositoryImpl @Inject constructor(
     private val weatherRemoteDataSource: WeatherRemoteDataSource,
     private val weatherLocalDataSource: WeatherLocalDataSource
@@ -25,5 +21,9 @@ class WeatherRepositoryImpl @Inject constructor(
         val remoteWeather = weatherRemoteDataSource.getCurrentWeather(lat, long)
         weatherLocalDataSource.saveCurrentWeather(remoteWeather)
         return remoteWeather.toDomain()
+    }
+
+    override suspend fun saveWeather(weather: Weather) {
+        weatherLocalDataSource.saveWeather(weather)
     }
 }

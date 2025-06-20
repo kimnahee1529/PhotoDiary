@@ -1,0 +1,32 @@
+package com.todaylab.cleanarchtemplate.local.impl
+
+import android.content.Context
+import androidx.datastore.preferences.core.edit
+import com.todaylab.cleanarchtemplate.data.local.BirthDateLocalDataSource
+import com.todaylab.cleanarchtemplate.local.datastore.BirthDateKeys
+import com.todaylab.cleanarchtemplate.local.datastore.birthDateDataStore
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.first
+import javax.inject.Inject
+
+
+class BirthDateLocalDataSourceImpl @Inject constructor(
+    @ApplicationContext private val context: Context
+): BirthDateLocalDataSource {
+    override suspend fun saveBirthDate(year: String, month: String, day: String) {
+        context.birthDateDataStore.edit { prefs ->
+            prefs[BirthDateKeys.YEAR] = year
+            prefs[BirthDateKeys.MONTH] = month
+            prefs[BirthDateKeys.DAY] = day
+        }
+    }
+
+    override suspend fun getBirthDate(): String? {
+        val prefs = context.birthDateDataStore.data.first()
+        val y = prefs[BirthDateKeys.YEAR]
+        val m = prefs[BirthDateKeys.MONTH]
+        val d = prefs[BirthDateKeys.DAY]
+        return if (y != null && m != null && d != null) "$y-$m-$d" else null
+    }
+
+}

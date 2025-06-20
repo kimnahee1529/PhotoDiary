@@ -22,8 +22,11 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "GOOGLE_MAP_API_KEY", getApiKey("GOOGLE_MAP_API_KEY"))
-        buildConfigField("String", "OPEN_WEATHER_API_KEY", getApiKey("OPEN_WEATHER_API_KEY"))
+        buildConfigField(
+            "String",
+            "WEATHER_API_KEY",
+            getApiKey("WEATHER_API_KEY")
+        )
     }
 
     buildTypes {
@@ -64,6 +67,10 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
+    implementation(libs.google.play.services.location)
+    testImplementation(libs.junit)
+
     implementation(libs.hilt.navigation.compose)
     implementation(libs.google.dagger.hilt)
     implementation(libs.androidx.appcompat)
@@ -82,6 +89,11 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.converter)
     implementation(libs.timber)
+
+
+    implementation(libs.datastore.preferences)
+
+    implementation(libs.coil.compose)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -1,12 +1,8 @@
 package com.todaylab.cleanarchtemplate.data.local
 
-import com.todaylab.cleanarchtemplate.data.model.WeatherEntity
+import com.todaylab.cleanarchtemplate.domain.model.Weather
 
-/**
- * data layer
- * weather local data source interface
- */
 interface WeatherLocalDataSource {
-    suspend fun getCurrentWeather(lat: Double, long: Double): WeatherEntity?
-    suspend fun saveCurrentWeather(weather: WeatherEntity): Boolean
+
+    suspend fun saveWeather(weather: Weather)
 }

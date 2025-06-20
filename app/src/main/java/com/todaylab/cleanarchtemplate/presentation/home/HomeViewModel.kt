@@ -1,52 +1,152 @@
 package com.todaylab.cleanarchtemplate.presentation.home
 
-import androidx.lifecycle.SavedStateHandle
-import com.todaylab.cleanarchtemplate.domain.usecase.GetCurrentWeatherUseCase
-import com.todaylab.cleanarchtemplate.presentation.BaseViewModel
+import android.content.Context
+import android.content.pm.PackageManager
+import android.util.Log
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.android.gms.location.LocationServices
+import com.todaylab.cleanarchtemplate.domain.usecase.GetBirthDateUseCase
+import com.todaylab.cleanarchtemplate.domain.usecase.GetWeatherUseCase
+import com.todaylab.cleanarchtemplate.domain.usecase.SaveBirthDateUseCase
+import com.todaylab.cleanarchtemplate.domain.usecase.SaveWeatherUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-/**
- * presentation layer
- * home view model
- */
-
-/**
- * home screen states
- */
-data class HomeState(
-    // device location used to get weather
-    val lat: Double? = null,
-    val long: Double? = null,
-
-    // weather state from current location
-    //val weather: WeatherState? = null,
-
-    // birth date
-    val birth: String = "",
-    // save birth to datastore if set to true
-    val saveBirth: Boolean = false,
-)
-
-/**
- * home screen event interface
- */
-interface HomeEvent {
-    /**
-     *
-     */
-    fun onToggleSaveBirth(toggle: Boolean)
-
-    /**
-     *
-     */
-    fun onCompletedBirthInput(birth: String)
-}
-
+// todo: implement BaseViewModel class
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val getCurrentWeatherUseCase: GetCurrentWeatherUseCase,
-) : BaseViewModel(savedStateHandle) {
-    // todo: implement home viewmodel
+    private val getWeatherUseCase: GetWeatherUseCase,
+    private val saveWeatherUseCase: SaveWeatherUseCase,
+    private val saveBirthDateUseCase: SaveBirthDateUseCase,
+    private val getBirthDateUseCase: GetBirthDateUseCase
+) : ViewModel() {
+    private val _weatherUiState = MutableStateFlow(WeatherUiState())
+    val weatherUiState: StateFlow<WeatherUiState> = _weatherUiState.asStateFlow()
+
+    private val _birthDateState = MutableStateFlow<BirthdayUiState>(BirthdayUiState())
+    val birthDateState: StateFlow<BirthdayUiState> = _birthDateState.asStateFlow()
+
+
+    init {
+        loadWeather(lat = 37.5, lon = 127.0)
+    }
+
+    private fun loadWeather(lat: Double, lon: Double) {
+        viewModelScope.launch {
+            _weatherUiState.update { it.copy(isLoading = true) }
+
+            try {
+                val weather = getWeatherUseCase(lat, lon)
+                saveWeatherUseCase(weather)
+                _weatherUiState.update {
+                    it.copy(
+                        isLoading = false,
+                        weather = weather,
+                        errorMessage = null
+                    )
+                }
+            } catch (e: Exception) {
+                _weatherUiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = e.message ?: "Unknown error"
+                    )
+                }
+            }
+        }
+    }
+
+    fun fetchWeatherWithCurrentLocation(context: Context) {
+        viewModelScope.launch {
+            val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+
+            val hasPermission = ContextCompat.checkSelfPermission(
+                context,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+
+            if (!hasPermission) {
+                // 권한이 없으면 요청하거나 예외 처리
+                return@launch
+            }
+
+            try {
+                val location = fusedLocationClient.lastLocation.await()
+                if (location != null) {
+                    val lat = location.latitude
+                    val lon = location.longitude
+                    loadWeather(lat, lon)
+                }
+            } catch (e: SecurityException) {
+                // 위치 권한 거부됨
+            } catch (e: Exception) {
+                // 다른 예외
+            }
+        }
+    }
+
+    fun saveBirthDate(year: String, month: String, day: String) {
+        viewModelScope.launch {
+            saveBirthDateUseCase(year, month, day)
+        }
+    }
+
+    fun loadBirthDate() {
+        viewModelScope.launch {
+            _birthDateState.update { it.copy(isLoading = true) }
+
+            try {
+                val birthDateString: String? = getBirthDateUseCase()
+                Log.e("확인", "birthDate: $birthDateString")
+                if (!birthDateString.isNullOrBlank()) {
+                    val parts = birthDateString.split("-")
+                    if (parts.size == 3) {
+                        _birthDateState.update {
+                            it.copy(
+                                year = parts[0],
+                                month = parts[1],
+                                day = parts[2],
+                                isLoading = false,
+                                errorMessage = null
+                            )
+                        }
+                    } else {
+                        _birthDateState.update {
+                            it.copy(
+                                isLoading = false,
+                                errorMessage = "잘못된 생년월일 형식입니다."
+                            )
+                        }
+                    }
+                } else {
+                    _birthDateState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = "저장된 생년월일이 없습니다."
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                _birthDateState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = e.message ?: "불러오기 오류"
+                    )
+                }
+            }
+        }
+    }
+
+
+
+
+
 }

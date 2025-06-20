@@ -1,12 +1,9 @@
 package com.todaylab.cleanarchtemplate.data.remote
 
 import com.todaylab.cleanarchtemplate.data.model.WeatherEntity
+import com.todaylab.cleanarchtemplate.remote.model.response.Weather
 
-
-/**
- * data layer
- * weather remote data source interface
- */
 interface WeatherRemoteDataSource {
-    suspend fun getCurrentWeather(lat: Double, long: Double): WeatherEntity
+    suspend fun getWeather(lat: Double, lon: Double): WeatherEntity
+
 }
