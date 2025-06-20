@@ -2,12 +2,23 @@ package com.todaylab.cleanarchtemplate.presentation
 
 import java.io.IOException
 
+/**
+ * Custom exception class for handling HTTP-like errors in the presentation layer.
+ * 
+ * @param code The HTTP status code associated with this exception
+ * @param message Human-readable error message
+ * @param data Optional additional data associated with the error
+ */
 class CustomException(
     val code: StatusCode,
     override val message: String,
     val data: Any? = null,
 ) : IOException(message) {
 
+    /**
+     * HTTP status codes enum covering all standard HTTP status codes
+     * plus an Unknown category for unhandled cases.
+     */
     enum class StatusCode(val code: Int) {
         Continue(100),
         SwitchingProtocols(101),
