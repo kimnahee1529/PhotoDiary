@@ -1,4 +1,4 @@
-package com.todaylab.cleanarchtemplate.ui.main
+package com.todaylab.cleanarchtemplate.ui.screenB
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,21 +14,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 
-@Composable
-fun LuckyResultRoute(
-    navController: NavHostController
-){
-    LuckyResultScreen()
-}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LuckyResultScreen(
-
-) {
+fun ScreenB(navController: NavHostController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("오늘 행운의 숫자는? ☘") },
+                title = { Text("Screen B") },
             )
         }
     ) { innerPadding ->
@@ -40,7 +32,7 @@ fun LuckyResultScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("LuckyResultScreen")
+            Text("ScreenA")
         }
     }
 }

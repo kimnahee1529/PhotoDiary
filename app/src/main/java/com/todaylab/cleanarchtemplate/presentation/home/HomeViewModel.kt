@@ -1,99 +1,93 @@
 package com.todaylab.cleanarchtemplate.presentation.home
 
-import android.content.Context
-import android.content.pm.PackageManager
 import android.util.Log
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.location.LocationServices
 import com.todaylab.cleanarchtemplate.domain.usecase.GetBirthDateUseCase
 import com.todaylab.cleanarchtemplate.domain.usecase.GetWeatherUseCase
 import com.todaylab.cleanarchtemplate.domain.usecase.SaveBirthDateUseCase
-import com.todaylab.cleanarchtemplate.domain.usecase.SaveWeatherUseCase
+import com.todaylab.cleanarchtemplate.presentation.model.BirthDateModel
+import com.todaylab.cleanarchtemplate.presentation.model.HomeStateModel
+import com.todaylab.cleanarchtemplate.presentation.model.WeatherModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
+
+interface HomeEvent {
+    fun saveLocation(lat: Double, lon: Double)
+    fun saveBirthDate(year: String, month: String, day: String)
+}
 
 // todo: implement BaseViewModel class
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getWeatherUseCase: GetWeatherUseCase,
-    private val saveWeatherUseCase: SaveWeatherUseCase,
     private val saveBirthDateUseCase: SaveBirthDateUseCase,
     private val getBirthDateUseCase: GetBirthDateUseCase
-) : ViewModel() {
-    private val _weatherUiState = MutableStateFlow(WeatherUiState())
-    val weatherUiState: StateFlow<WeatherUiState> = _weatherUiState.asStateFlow()
+) : ViewModel(), HomeEvent {
 
-    private val _birthDateState = MutableStateFlow<BirthdayUiState>(BirthdayUiState())
-    val birthDateState: StateFlow<BirthdayUiState> = _birthDateState.asStateFlow()
+    private val _weatherModel = MutableStateFlow<WeatherModel?>(null)
+    private val _birthDateState = MutableStateFlow<BirthDateModel>(BirthDateModel())
 
+    private val _stateModel = MutableStateFlow<HomeStateModel>(HomeStateModel())
+    val stateModel: StateFlow<HomeStateModel> = _stateModel.asStateFlow()
 
     init {
-        loadWeather(lat = 37.5, lon = 127.0)
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+//                loadWeather(lat = 37.5, lon = 127.0)
+            }
+        }
+
+        combine(_weatherModel, _birthDateState) { weather, birthDate ->
+            _stateModel.update {
+                it.copy(
+                    weather = weather,
+                    birthDate = birthDate
+                )
+            }
+        }.launchIn(viewModelScope)
     }
 
-    private fun loadWeather(lat: Double, lon: Double) {
-        viewModelScope.launch {
-            _weatherUiState.update { it.copy(isLoading = true) }
+    override fun saveLocation(lat: Double, lon: Double) {
+
+    }
+
+    private suspend fun loadWeather(lat: Double, lon: Double) {
+        _weatherModel.update { it?.copy(isLoading = true) }
 
             try {
+                Log.d("weather", "HomeViewModel init")
                 val weather = getWeatherUseCase(lat, lon)
-                saveWeatherUseCase(weather)
-                _weatherUiState.update {
-                    it.copy(
+                _weatherModel.update {
+                    it?.copy(
                         isLoading = false,
-                        weather = weather,
+                        date = weather.date,
+                        lat = weather.lat,
+                        lon = weather.lon,
+                        main = weather.main,
                         errorMessage = null
                     )
                 }
             } catch (e: Exception) {
-                _weatherUiState.update {
-                    it.copy(
+                _weatherModel.update {
+                    it?.copy(
                         isLoading = false,
                         errorMessage = e.message ?: "Unknown error"
                     )
                 }
             }
-        }
     }
 
-    fun fetchWeatherWithCurrentLocation(context: Context) {
-        viewModelScope.launch {
-            val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-
-            val hasPermission = ContextCompat.checkSelfPermission(
-                context,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-
-            if (!hasPermission) {
-                // 권한이 없으면 요청하거나 예외 처리
-                return@launch
-            }
-
-            try {
-                val location = fusedLocationClient.lastLocation.await()
-                if (location != null) {
-                    val lat = location.latitude
-                    val lon = location.longitude
-                    loadWeather(lat, lon)
-                }
-            } catch (e: SecurityException) {
-                // 위치 권한 거부됨
-            } catch (e: Exception) {
-                // 다른 예외
-            }
-        }
-    }
-
-    fun saveBirthDate(year: String, month: String, day: String) {
+    override fun saveBirthDate(year: String, month: String, day: String) {
         viewModelScope.launch {
             saveBirthDateUseCase(year, month, day)
         }
@@ -144,9 +138,6 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
-
-
-
 
 
 }

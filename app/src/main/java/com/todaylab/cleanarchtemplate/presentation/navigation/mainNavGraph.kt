@@ -4,16 +4,16 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.todaylab.cleanarchtemplate.presentation.fortune.FortuneScreen
-import com.todaylab.cleanarchtemplate.ui.main.LuckyResultRoute
-import com.todaylab.cleanarchtemplate.ui.main.MainRoute
-import com.todaylab.cleanarchtemplate.ui.main.ScreenB
+import com.todaylab.cleanarchtemplate.ui.home.HomeRoute
+import com.todaylab.cleanarchtemplate.ui.result.ResultRoute
+import com.todaylab.cleanarchtemplate.ui.screenB.ScreenB
 
 fun NavGraphBuilder.mainNavGraph(navController: NavHostController) {
     composable(AppRoute.Main.route) {
-        MainRoute(navController)
+        HomeRoute(navController)
     }
     composable(AppRoute.LuckyResult.route) {
-        LuckyResultRoute(navController)
+        ResultRoute(navController)
     }
     composable(AppRoute.ScreenB.route) {
         ScreenB(navController)
