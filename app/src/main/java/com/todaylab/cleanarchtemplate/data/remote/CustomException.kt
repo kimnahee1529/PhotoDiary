@@ -1,4 +1,4 @@
-package com.todaylab.cleanarchtemplate.presentation
+package com.todaylab.cleanarchtemplate.data.remote
 
 import java.io.IOException
 
