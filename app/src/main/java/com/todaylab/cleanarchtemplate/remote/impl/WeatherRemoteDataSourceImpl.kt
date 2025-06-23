@@ -19,5 +19,4 @@ class WeatherRemoteDataSourceImpl @Inject constructor(
             throw Exception("API error: ${response.code()}")
         }
     }
-
 }

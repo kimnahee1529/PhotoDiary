@@ -1,6 +1,8 @@
 package com.todaylab.cleanarchtemplate.domain.repository
 
+import com.todaylab.cleanarchtemplate.domain.model.BirthDate
+
 interface BirthDateRepository {
-    suspend fun saveBirthDate(year: String, month: String, day: String)
-    suspend fun getBirthDate(): String?
+    suspend fun saveBirthDate(birthDate: BirthDate)
+    suspend fun getBirthDate(): BirthDate?
 }
