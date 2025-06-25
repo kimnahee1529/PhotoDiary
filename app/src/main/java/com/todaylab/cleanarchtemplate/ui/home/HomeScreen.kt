@@ -96,14 +96,13 @@ fun HomeRoute(
         } else {
 //            viewModel.fetchWeatherWithCurrentLocation(context)
         }
-        Log.e("생년월일", viewModel.loadBirthDate().toString())
     }
 
     HomeScreen(
         homeState = homeState,
         isPermissionGranted = isPermissionGranted,
         onNextClick = { year, month, day ->
-            viewModel.saveBirthDate(year = year, month = month, day = day)
+//            viewModel.saveBirthDate(year = year, month = month, day = day)
         },
         onNavigate = { route ->
             navController.navigate(route)

@@ -1,11 +1,11 @@
 package com.todaylab.cleanarchtemplate.presentation.home
 
-import android.util.Log
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.todaylab.cleanarchtemplate.domain.usecase.GetBirthDateUseCase
 import com.todaylab.cleanarchtemplate.domain.usecase.GetWeatherUseCase
 import com.todaylab.cleanarchtemplate.domain.usecase.SaveBirthDateUseCase
+import com.todaylab.cleanarchtemplate.presentation.BaseViewModel
 import com.todaylab.cleanarchtemplate.presentation.model.BirthDateModel
 import com.todaylab.cleanarchtemplate.presentation.model.HomeStateModel
 import com.todaylab.cleanarchtemplate.presentation.model.WeatherModel
@@ -18,22 +18,33 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 
 interface HomeEvent {
-    fun saveLocation(lat: Double, lon: Double)
-    fun saveBirthDate(year: String, month: String, day: String)
+    fun saveLocation(
+        lat: Double,
+        lon: Double,
+    )
+
+    fun setBirthDateYear(year: String)
+    fun setBirthDateMonth(month: String)
+    fun setBirthDateDay(day: String)
+
+    fun saveBirthDate()
 }
 
 // todo: implement BaseViewModel class
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+class HomeViewModel
+@Inject
+constructor(
+    savedStateHandle: SavedStateHandle,
     private val getWeatherUseCase: GetWeatherUseCase,
     private val saveBirthDateUseCase: SaveBirthDateUseCase,
-    private val getBirthDateUseCase: GetBirthDateUseCase
-) : ViewModel(), HomeEvent {
-
+    private val getBirthDateUseCase: GetBirthDateUseCase,
+) : BaseViewModel(savedStateHandle),
+    HomeEvent {
     private val _weatherModel = MutableStateFlow<WeatherModel?>(null)
     private val _birthDateState = MutableStateFlow<BirthDateModel>(BirthDateModel())
 
@@ -41,31 +52,36 @@ class HomeViewModel @Inject constructor(
     val stateModel: StateFlow<HomeStateModel> = _stateModel.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-//                loadWeather(lat = 37.5, lon = 127.0)
+        viewModelScopeEH.launch {
+            customException.collect {
+                Timber.e(it.message)
             }
+            }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            loadBirthDate()
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            // todo load weather when current location is set
+            loadWeather(lat = 37.5, lon = 127.0)
         }
 
         combine(_weatherModel, _birthDateState) { weather, birthDate ->
             _stateModel.update {
                 it.copy(
                     weather = weather,
-                    birthDate = birthDate
+                    birthDate = birthDate,
                 )
             }
         }.launchIn(viewModelScope)
     }
 
-    override fun saveLocation(lat: Double, lon: Double) {
-
-    }
-
-    private suspend fun loadWeather(lat: Double, lon: Double) {
+    private suspend fun loadWeather(
+        lat: Double,
+        lon: Double,
+    ) {
         _weatherModel.update { it?.copy(isLoading = true) }
-
             try {
-                Log.d("weather", "HomeViewModel init")
                 val weather = getWeatherUseCase(lat, lon)
                 _weatherModel.update {
                     it?.copy(
@@ -74,70 +90,57 @@ class HomeViewModel @Inject constructor(
                         lat = weather.lat,
                         lon = weather.lon,
                         main = weather.main,
-                        errorMessage = null
+                        errorMessage = null,
                     )
                 }
             } catch (e: Exception) {
                 _weatherModel.update {
                     it?.copy(
                         isLoading = false,
-                        errorMessage = e.message ?: "Unknown error"
+                        errorMessage = e.message ?: "Unknown error",
                     )
                 }
             }
     }
 
-    override fun saveBirthDate(year: String, month: String, day: String) {
-        viewModelScope.launch {
-            saveBirthDateUseCase(year, month, day)
-        }
-    }
-
-    fun loadBirthDate() {
+    private suspend fun loadBirthDate() {
         viewModelScope.launch {
             _birthDateState.update { it.copy(isLoading = true) }
 
-            try {
-                val birthDateString: String? = getBirthDateUseCase()
-                Log.e("확인", "birthDate: $birthDateString")
-                if (!birthDateString.isNullOrBlank()) {
-                    val parts = birthDateString.split("-")
-                    if (parts.size == 3) {
-                        _birthDateState.update {
-                            it.copy(
-                                year = parts[0],
-                                month = parts[1],
-                                day = parts[2],
-                                isLoading = false,
-                                errorMessage = null
-                            )
-                        }
-                    } else {
-                        _birthDateState.update {
-                            it.copy(
-                                isLoading = false,
-                                errorMessage = "잘못된 생년월일 형식입니다."
-                            )
-                        }
-                    }
-                } else {
-                    _birthDateState.update {
-                        it.copy(
-                            isLoading = false,
-                            errorMessage = "저장된 생년월일이 없습니다."
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                _birthDateState.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = e.message ?: "불러오기 오류"
-                    )
-                }
+            val savedBirthDate = getBirthDateUseCase()
+            _birthDateState.update {
+                it.copy(
+                    isLoading = false,
+                    year = savedBirthDate?.year ?: "",
+                    month = savedBirthDate?.month ?: "",
+                    day = savedBirthDate?.day ?: "",
+                )
             }
         }
     }
 
+    override fun saveLocation(lat: Double, lon: Double) {
+        TODO("Not yet implemented")
+    }
 
+    override fun setBirthDateYear(year: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun setBirthDateMonth(month: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun setBirthDateDay(day: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun saveBirthDate() {
+        TODO("Not yet implemented")
+//        viewModelScope.launch {
+//            saveBirthDateUseCase(
+//                _birthDateState.value // todo: map to domain
+//            )
+//        }
+    }
 }
