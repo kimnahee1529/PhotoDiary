@@ -9,8 +9,9 @@ data class WeatherResponse(
     val main: Main,
     val visibility: Int,
     val wind: Wind,
-    val rain: Rain?, // null 가능성 있음
     val clouds: Clouds,
+    val rain: Rain? = null,
+    val snow: Snow? = null,
     val dt: Long,
     val sys: Sys,
     val timezone: Int,
@@ -33,12 +34,17 @@ data class Weather(
 
 data class Main(
     val temp: Double,
+    @SerialName("feelsLike")
     val feels_like: Double,
+    @SerialName("tempMin")
     val temp_min: Double,
+    @SerialName("tempMax")
     val temp_max: Double,
     val pressure: Int,
     val humidity: Int,
+    @SerialName("seaLevel")
     val sea_level: Int?,
+    @SerialName("grndLevel")
     val grnd_level: Int?
 )
 
@@ -48,13 +54,18 @@ data class Wind(
     val gust: Double?
 )
 
+data class Clouds(
+    val all: Int
+)
+
 data class Rain(
     @SerialName("1h")
     val oneHour: Double
 )
 
-data class Clouds(
-    val all: Int
+data class Snow(
+    @SerialName("1h")
+    val oneHour: Double
 )
 
 data class Sys(
