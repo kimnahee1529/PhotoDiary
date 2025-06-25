@@ -1,5 +1,6 @@
 package com.todaylab.cleanarchtemplate.ui
 
+import com.todaylab.cleanarchtemplate.core.DataResource
 import com.todaylab.cleanarchtemplate.presentation.model.BirthDateModel
 import com.todaylab.cleanarchtemplate.presentation.model.HomeStateModel
 import com.todaylab.cleanarchtemplate.presentation.model.WeatherModel
@@ -14,9 +15,6 @@ internal fun WeatherModel.toUi() = WeatherState(
     main = main,
     description = description,
     icon = icon,
-
-    isLoading = isLoading,
-    errorMessage = errorMessage
 )
 
 internal fun BirthDateModel.toUi() = BirthDateState(
@@ -28,6 +26,10 @@ internal fun BirthDateModel.toUi() = BirthDateState(
 )
 
 internal fun HomeStateModel.toUi() = HomeState(
-    weather = weather?.toUi(),
+    weather = when (weather) {
+        is DataResource.Success -> DataResource.success(weather.data.toUi())
+        is DataResource.Loading -> DataResource.loading(weather.data?.toUi())
+        is DataResource.Error -> DataResource.error(weather.throwable)
+    },
     birthDate = birthDate.toUi()
 )

@@ -11,4 +11,13 @@ sealed class DataResource<out T> {
         fun error(throwable: Throwable) = Error(throwable)
         fun <T> loading(data: T? = null) = Loading(data)
     }
+
+    // override toString() for debug purpose
+    override fun toString(): String {
+        return when (this) {
+            is Success -> "Success[data=$data]"
+            is Error -> "Error[throwable=$throwable]"
+            is Loading -> "Loading[data=$data]"
+        }
+    }
 }

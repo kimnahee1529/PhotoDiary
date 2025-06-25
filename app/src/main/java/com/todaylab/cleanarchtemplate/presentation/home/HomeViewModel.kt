@@ -2,6 +2,7 @@ package com.todaylab.cleanarchtemplate.presentation.home
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.todaylab.cleanarchtemplate.core.DataResource
 import com.todaylab.cleanarchtemplate.domain.usecase.GetBirthDateUseCase
 import com.todaylab.cleanarchtemplate.domain.usecase.GetWeatherUseCase
 import com.todaylab.cleanarchtemplate.domain.usecase.SaveBirthDateUseCase
@@ -9,6 +10,7 @@ import com.todaylab.cleanarchtemplate.presentation.BaseViewModel
 import com.todaylab.cleanarchtemplate.presentation.model.BirthDateModel
 import com.todaylab.cleanarchtemplate.presentation.model.HomeStateModel
 import com.todaylab.cleanarchtemplate.presentation.model.WeatherModel
+import com.todaylab.cleanarchtemplate.presentation.toPresentation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +30,9 @@ interface HomeEvent {
     )
 
     fun setBirthDateYear(year: String)
+
     fun setBirthDateMonth(month: String)
+
     fun setBirthDateDay(day: String)
 
     fun saveBirthDate()
@@ -45,7 +49,7 @@ constructor(
     private val getBirthDateUseCase: GetBirthDateUseCase,
 ) : BaseViewModel(savedStateHandle),
     HomeEvent {
-    private val _weatherModel = MutableStateFlow<WeatherModel?>(null)
+    private val _weatherModel = MutableStateFlow<DataResource<WeatherModel>>(DataResource.loading())
     private val _birthDateState = MutableStateFlow<BirthDateModel>(BirthDateModel())
 
     private val _stateModel = MutableStateFlow<HomeStateModel>(HomeStateModel())
@@ -59,7 +63,7 @@ constructor(
             }
 
         viewModelScope.launch(Dispatchers.IO) {
-            loadBirthDate()
+//                loadBirthDate()
         }
         viewModelScope.launch(Dispatchers.IO) {
             // todo load weather when current location is set
@@ -80,27 +84,22 @@ constructor(
         lat: Double,
         lon: Double,
     ) {
-        _weatherModel.update { it?.copy(isLoading = true) }
-            try {
-                val weather = getWeatherUseCase(lat, lon)
-                _weatherModel.update {
-                    it?.copy(
-                        isLoading = false,
-                        date = weather.date,
-                        lat = weather.lat,
-                        lon = weather.lon,
-                        main = weather.main,
-                        errorMessage = null,
-                    )
-                }
-            } catch (e: Exception) {
-                _weatherModel.update {
-                    it?.copy(
-                        isLoading = false,
-                        errorMessage = e.message ?: "Unknown error",
-                    )
-                }
+        _weatherModel.update { it ->
+            when (it) {
+                is DataResource.Success -> DataResource.success(it.data)
+                is DataResource.Loading -> DataResource.loading(it.data)
+                is DataResource.Error -> DataResource.loading()
             }
+        }
+                val weather = getWeatherUseCase(lat, lon)
+        Timber.d("weather use case - weather: $weather")
+                _weatherModel.update {
+                    when (weather) {
+                        is DataResource.Success -> DataResource.success(weather.data.toPresentation())
+                        is DataResource.Loading -> DataResource.loading(weather.data?.toPresentation())
+                        is DataResource.Error -> DataResource.error(weather.throwable)
+                    }
+                }
     }
 
     private suspend fun loadBirthDate() {
@@ -119,7 +118,10 @@ constructor(
         }
     }
 
-    override fun saveLocation(lat: Double, lon: Double) {
+    override fun saveLocation(
+        lat: Double,
+        lon: Double,
+    ) {
         TODO("Not yet implemented")
     }
 

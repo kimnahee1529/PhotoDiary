@@ -48,10 +48,12 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.todaylab.cleanarchtemplate.R
+import com.todaylab.cleanarchtemplate.core.DataResource
 import com.todaylab.cleanarchtemplate.presentation.home.HomeViewModel
 import com.todaylab.cleanarchtemplate.presentation.navigation.AppRoute
 import com.todaylab.cleanarchtemplate.ui.model.BirthDateState
 import com.todaylab.cleanarchtemplate.ui.model.HomeState
+import com.todaylab.cleanarchtemplate.ui.model.WeatherState
 import com.todaylab.cleanarchtemplate.ui.theme.colors
 import com.todaylab.cleanarchtemplate.ui.toUi
 import com.todaylab.cleanarchtemplate.ui.widget.InputCompleteButton
@@ -60,13 +62,13 @@ import com.todaylab.cleanarchtemplate.ui.widget.WheelSpinner
 data class SpinnerState(
     val label: String,
     val items: List<String>,
-    val onSelected: (String) -> Unit
+    val onSelected: (String) -> Unit,
 )
 
 @Composable
 fun HomeRoute(
     navController: NavHostController,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
 
@@ -74,21 +76,22 @@ fun HomeRoute(
     val homeState = remember(homeStateModel) { homeStateModel.toUi() }
 
     var isPermissionGranted by remember { mutableStateOf(false) }
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-        onResult = { isGranted ->
-            Log.e("isGranted 권한", isGranted.toString())
-            if (isGranted) {
-                isPermissionGranted = true
+    val permissionLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission(),
+            onResult = { isGranted ->
+                Log.e("isGranted 권한", isGranted.toString())
+                if (isGranted) {
+                    isPermissionGranted = true
 //                viewModel.fetchWeatherWithCurrentLocation(context)
-            }
-        }
-    )
+                }
+            },
+        )
 
     LaunchedEffect(Unit) {
         isPermissionGranted = ContextCompat.checkSelfPermission(
             context,
-            Manifest.permission.ACCESS_FINE_LOCATION
+            Manifest.permission.ACCESS_FINE_LOCATION,
         ) == PackageManager.PERMISSION_GRANTED
 
         if (!isPermissionGranted) {
@@ -106,10 +109,9 @@ fun HomeRoute(
         },
         onNavigate = { route ->
             navController.navigate(route)
-        }
+        },
     )
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -137,55 +139,53 @@ fun HomeScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Row {
+                    Column {
                         Text("오늘 행운을 찾으러 가봐요!")
                         Spacer(modifier = Modifier.weight(1f))
-                        when {
-                            homeState.weather == null -> Text("No weather")
-                            homeState.weather.isLoading -> Text("Loading...")
-                            homeState.weather.icon != null -> Text("Weather: ${homeState.weather.icon}")
-                            homeState.weather.errorMessage != null -> Text("Error: ${homeState.weather.errorMessage}")
-                        }
+                        WeatherIcon(homeState.weather)
                     }
-                }
+                },
             )
         },
         bottomBar = {
             InputCompleteButton(
-                modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                    .navigationBarsPadding(),
+                modifier =
+                    Modifier
+                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                        .navigationBarsPadding(),
                 text = "확인하기",
                 onNextClick = {
                     onNextClick(year, month, day)
                     onNavigate(AppRoute.LuckyResult.route)
-                }
+                },
             )
-        }
+        },
     ) { innerPadding ->
 
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(innerPadding)
-                .padding(horizontal = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(innerPadding)
+                    .padding(horizontal = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-
             Image(
                 painter = painterResource(id = R.drawable.lucky),
                 contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
             )
             // 생년월일 WheelSpinner 텍스트필드
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(24.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(24.dp),
             ) {
                 WheelSpinnerSelector(
                     modifier = Modifier.weight(2f),
@@ -193,18 +193,20 @@ fun HomeScreen(
                     selectedText = year,
                     label = "년",
                     onClick = {
-                        spinnerDialogState = SpinnerState(
-                            label = "년",
-                            items = listOf(
-                                "",
-                                "",
-                                * (1900..2024).map { it.toString() }.toTypedArray(),
-                                "",
-                                ""
-                            ),
-                            onSelected = { year = it }
-                        )
-                    }
+                        spinnerDialogState =
+                            SpinnerState(
+                                label = "년",
+                                items =
+                                    listOf(
+                                        "",
+                                        "",
+                                        * (1900..2024).map { it.toString() }.toTypedArray(),
+                                        "",
+                                        "",
+                                    ),
+                                onSelected = { year = it },
+                            )
+                    },
                 )
 
                 WheelSpinnerSelector(
@@ -213,18 +215,20 @@ fun HomeScreen(
                     selectedText = month,
                     label = "월",
                     onClick = {
-                        spinnerDialogState = SpinnerState(
-                            label = "월",
-                            items = listOf(
-                                "",
-                                "",
-                                * (1..12).map { it.toString() }.toTypedArray(),
-                                "",
-                                ""
-                            ),
-                            onSelected = { month = it }
-                        )
-                    }
+                        spinnerDialogState =
+                            SpinnerState(
+                                label = "월",
+                                items =
+                                    listOf(
+                                        "",
+                                        "",
+                                        * (1..12).map { it.toString() }.toTypedArray(),
+                                        "",
+                                        "",
+                                    ),
+                                onSelected = { month = it },
+                            )
+                    },
                 )
 
                 WheelSpinnerSelector(
@@ -233,18 +237,20 @@ fun HomeScreen(
                     selectedText = day,
                     label = "일",
                     onClick = {
-                        spinnerDialogState = SpinnerState(
-                            label = "일",
-                            items = listOf(
-                                "",
-                                "",
-                                * (1..31).map { it.toString() }.toTypedArray(),
-                                "",
-                                ""
-                            ),
-                            onSelected = { day = it }
-                        )
-                    }
+                        spinnerDialogState =
+                            SpinnerState(
+                                label = "일",
+                                items =
+                                    listOf(
+                                        "",
+                                        "",
+                                        * (1..31).map { it.toString() }.toTypedArray(),
+                                        "",
+                                        "",
+                                    ),
+                                onSelected = { day = it },
+                            )
+                    },
                 )
             }
 
@@ -267,14 +273,12 @@ fun HomeScreen(
                     items = state.items,
                     onSelected = {
                         state.onSelected(it)
-                    }
+                    },
                 )
-            }
+            },
         )
     }
-
 }
-
 
 @Composable
 fun WheelSpinnerSelector(
@@ -282,32 +286,41 @@ fun WheelSpinnerSelector(
     savedText: String,
     selectedText: String,
     label: String = "",
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Row(modifier = modifier) {
-
         Box(
-            modifier = Modifier
-                .height(50.dp)
-                .weight(1f)
-                .background(color = MaterialTheme.colors.grey2, shape = RoundedCornerShape(6.dp))
-                .clickable { onClick() },
-            contentAlignment = Alignment.CenterStart
+            modifier =
+                Modifier
+                    .height(50.dp)
+                    .weight(1f)
+                    .background(
+                        color = MaterialTheme.colors.grey2,
+                        shape = RoundedCornerShape(6.dp)
+                    )
+                    .clickable { onClick() },
+            contentAlignment = Alignment.CenterStart,
         ) {
             Text(
-                text = if (selectedText.isNotBlank()) selectedText else if (savedText.isNotBlank()) savedText else "",
+                text =
+                    if (selectedText.isNotBlank()) {
+                        selectedText
+                    } else if (savedText.isNotBlank()) {
+                        savedText
+                    } else {
+                        ""
+                    },
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(horizontal = 12.dp),
-                color = if (selectedText.isNotBlank()) Color.Black else Color.Gray
+                color = if (selectedText.isNotBlank()) Color.Black else Color.Gray,
             )
         }
         Spacer(modifier = Modifier.width(2.dp))
         Text(
             text = label,
             style = MaterialTheme.typography.labelMedium,
-            modifier = Modifier.align(Alignment.Bottom)
+            modifier = Modifier.align(Alignment.Bottom),
         )
-
     }
 }
 
@@ -315,18 +328,19 @@ fun WheelSpinnerSelector(
 fun CenteredButtonDialog(
     onDismissRequest: () -> Unit,
     content: @Composable () -> Unit,
-    onConfirm: () -> Unit
+    onConfirm: () -> Unit,
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         Surface(
             shape = RoundedCornerShape(12.dp),
-            color = Color.White
+            color = Color.White,
         ) {
             Column(
-                modifier = Modifier
-                    .padding(24.dp)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier =
+                    Modifier
+                        .padding(24.dp)
+                        .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 content()
 
@@ -340,35 +354,49 @@ fun CenteredButtonDialog(
     }
 }
 
+@Composable
+private fun WeatherIcon(
+    weather: DataResource<WeatherState>,
+    modifier: Modifier = Modifier,
+) {
+    when (weather) {
+        is DataResource.Loading -> Text(
+            text = "Loading... ${weather.data?.icon}",
+            modifier = modifier
+        )
+
+        is DataResource.Success -> Text(text = "${weather.data.icon}", modifier = modifier)
+        is DataResource.Error -> Text(
+            text = "Error: ${weather.throwable.message}",
+            modifier = modifier
+        )
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewMainScreen() {
+private fun PreviewMainScreen() {
     HomeScreen(
-        homeState = HomeState(
-            weather = null,
-            birthDate = BirthDateState(year = "1999", month = "12", day = "14")
-        ),
+        homeState =
+            HomeState(
+                weather = DataResource.loading(),
+                birthDate = BirthDateState(year = "1999", month = "12", day = "14"),
+            ),
         isPermissionGranted = true,
         onNextClick = { _, _, _ -> },
-        onNavigate = {}
+        onNavigate = {},
     )
 }
 
+@Preview
 @Composable
-fun ExampleScreen() {
+private fun PreviewWheelSpinnerSelector() {
     val yearItems = (1980..2025).map { it.toString() }
 
     WheelSpinnerSelector(
         savedText = "2023",
         selectedText = "2023",
         label = "년",
-        onClick = {}
+        onClick = {},
     )
-}
-
-@Preview
-@Composable
-fun PreviewExampleScreen() {
-    ExampleScreen()
 }
