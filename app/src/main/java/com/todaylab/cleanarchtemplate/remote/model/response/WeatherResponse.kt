@@ -1,15 +1,17 @@
 package com.todaylab.cleanarchtemplate.remote.model.response
 
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class WeatherResponse(
     val coord: Coord,
     val weather: List<Weather>,
     val base: String,
     val main: Main,
     val visibility: Int,
-    val wind: Wind,
-    val clouds: Clouds,
+    val wind: Wind? = null,
+    val clouds: Clouds? = null,
     val rain: Rain? = null,
     val snow: Snow? = null,
     val dt: Long,
@@ -17,61 +19,69 @@ data class WeatherResponse(
     val timezone: Int,
     val id: Long,
     val name: String,
-    val cod: Int
+    val cod: Int,
 )
 
+@Serializable
 data class Coord(
     val lon: Double,
-    val lat: Double
+    val lat: Double,
 )
 
+@Serializable
 data class Weather(
     val id: Int,
     val main: String,
     val description: String,
-    val icon: String
+    val icon: String,
 )
 
+@Serializable
 data class Main(
     val temp: Double,
-    @SerialName("feelsLike")
-    val feels_like: Double,
-    @SerialName("tempMin")
-    val temp_min: Double,
-    @SerialName("tempMax")
-    val temp_max: Double,
+    @SerialName("feels_like")
+    val feelsLike: Double,
+    @SerialName("temp_min")
+    val tempMin: Double,
+    @SerialName("temp_max")
+    val tempMax: Double,
     val pressure: Int,
     val humidity: Int,
-    @SerialName("seaLevel")
-    val sea_level: Int?,
-    @SerialName("grndLevel")
-    val grnd_level: Int?
+    @SerialName("sea_level")
+    val seaLevel: Int? = null,
+    @SerialName("grnd_level")
+    val grndLevel: Int? = null,
 )
 
+@Serializable
 data class Wind(
     val speed: Double,
     val deg: Int,
-    val gust: Double?
+    val gust: Double? = null,
 )
 
+@Serializable
 data class Clouds(
-    val all: Int
+    val all: Int,
 )
 
+@Serializable
 data class Rain(
     @SerialName("1h")
-    val oneHour: Double
+    val oneHour: Double,
 )
 
+@Serializable
 data class Snow(
     @SerialName("1h")
-    val oneHour: Double
+    val oneHour: Double,
 )
 
+@Serializable
 data class Sys(
     val type: Int,
     val id: Int,
     val country: String,
     val sunrise: Long,
-    val sunset: Long
+    val sunset: Long,
 )

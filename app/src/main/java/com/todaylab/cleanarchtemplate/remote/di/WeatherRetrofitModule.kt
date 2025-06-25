@@ -33,20 +33,24 @@ object WeatherRetrofitModule {
                 level = HttpLoggingInterceptor.Level.BODY
             }
 
-        val httpClient = OkHttpClient
-            .Builder()
-            .connectTimeout(20, TimeUnit.SECONDS)
-            .readTimeout(20, TimeUnit.SECONDS)
-            .writeTimeout(20, TimeUnit.SECONDS)
-            .addInterceptor(loggingInterceptor)
-            .addInterceptor(ApiKeyInterceptor("appid", APP_KEY))
-            .build()
+        val httpClient =
+            OkHttpClient
+                .Builder()
+                .connectTimeout(20, TimeUnit.SECONDS)
+                .readTimeout(20, TimeUnit.SECONDS)
+                .writeTimeout(20, TimeUnit.SECONDS)
+                .addInterceptor(loggingInterceptor)
+                .addInterceptor(ApiKeyInterceptor("appid", APP_KEY))
+                .build()
 
         return Retrofit
             .Builder()
             .baseUrl(BASE_URL)
-            .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
-            .client(httpClient)
+            .addConverterFactory(
+                Json {
+                    ignoreUnknownKeys = true
+                }.asConverterFactory("application/json".toMediaType()),
+            ).client(httpClient)
             .build()
     }
 }
