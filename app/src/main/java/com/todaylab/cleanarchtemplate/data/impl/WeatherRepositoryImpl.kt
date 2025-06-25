@@ -1,6 +1,5 @@
 package com.todaylab.cleanarchtemplate.data.impl
 
-import android.util.Log
 import com.todaylab.cleanarchtemplate.data.local.WeatherLocalDataSource
 import com.todaylab.cleanarchtemplate.data.remote.WeatherRemoteDataSource
 import com.todaylab.cleanarchtemplate.data.toDomain
@@ -13,7 +12,6 @@ class WeatherRepositoryImpl @Inject constructor(
     private val weatherLocalDataSource: WeatherLocalDataSource
 ) : WeatherRepository {
     override suspend fun getWeather(lat: Double, lon: Double): Weather {
-        Log.d("weather", "WeatherRepositoryImpl")
 
         val localWeather = weatherLocalDataSource.getWeather(lat, lon)
         if (localWeather != null) return localWeather.toDomain()
