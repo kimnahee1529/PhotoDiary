@@ -1,152 +1,148 @@
 package com.todaylab.cleanarchtemplate.presentation.home
 
-import android.content.Context
-import android.content.pm.PackageManager
-import android.util.Log
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.location.LocationServices
+import com.todaylab.cleanarchtemplate.core.DataResource
 import com.todaylab.cleanarchtemplate.domain.usecase.GetBirthDateUseCase
 import com.todaylab.cleanarchtemplate.domain.usecase.GetWeatherUseCase
 import com.todaylab.cleanarchtemplate.domain.usecase.SaveBirthDateUseCase
-import com.todaylab.cleanarchtemplate.domain.usecase.SaveWeatherUseCase
+import com.todaylab.cleanarchtemplate.presentation.BaseViewModel
+import com.todaylab.cleanarchtemplate.presentation.model.BirthDateModel
+import com.todaylab.cleanarchtemplate.presentation.model.HomeStateModel
+import com.todaylab.cleanarchtemplate.presentation.model.WeatherModel
+import com.todaylab.cleanarchtemplate.presentation.toPresentation
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 import javax.inject.Inject
+
+interface HomeEvent {
+    fun saveLocation(
+        lat: Double,
+        lon: Double,
+    )
+
+    fun setBirthDateYear(year: String)
+
+    fun setBirthDateMonth(month: String)
+
+    fun setBirthDateDay(day: String)
+
+    fun saveBirthDate()
+}
 
 // todo: implement BaseViewModel class
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+class HomeViewModel
+@Inject
+constructor(
+    savedStateHandle: SavedStateHandle,
     private val getWeatherUseCase: GetWeatherUseCase,
-    private val saveWeatherUseCase: SaveWeatherUseCase,
     private val saveBirthDateUseCase: SaveBirthDateUseCase,
-    private val getBirthDateUseCase: GetBirthDateUseCase
-) : ViewModel() {
-    private val _weatherUiState = MutableStateFlow(WeatherUiState())
-    val weatherUiState: StateFlow<WeatherUiState> = _weatherUiState.asStateFlow()
+    private val getBirthDateUseCase: GetBirthDateUseCase,
+) : BaseViewModel(savedStateHandle),
+    HomeEvent {
+    private val _weatherModel = MutableStateFlow<DataResource<WeatherModel>>(DataResource.loading())
+    private val _birthDateState = MutableStateFlow<BirthDateModel>(BirthDateModel())
 
-    private val _birthDateState = MutableStateFlow<BirthdayUiState>(BirthdayUiState())
-    val birthDateState: StateFlow<BirthdayUiState> = _birthDateState.asStateFlow()
-
+    private val _stateModel = MutableStateFlow<HomeStateModel>(HomeStateModel())
+    val stateModel: StateFlow<HomeStateModel> = _stateModel.asStateFlow()
 
     init {
-        loadWeather(lat = 37.5, lon = 127.0)
+        viewModelScopeEH.launch {
+            customException.collect {
+                Timber.e(it.message)
+            }
+            }
+
+        viewModelScope.launch(Dispatchers.IO) {
+//                loadBirthDate()
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            // todo load weather when current location is set
+            loadWeather(lat = 37.5, lon = 127.0)
+        }
+
+        combine(_weatherModel, _birthDateState) { weather, birthDate ->
+            _stateModel.update {
+                it.copy(
+                    weather = weather,
+                    birthDate = birthDate,
+                )
+            }
+        }.launchIn(viewModelScope)
     }
 
-    private fun loadWeather(lat: Double, lon: Double) {
-        viewModelScope.launch {
-            _weatherUiState.update { it.copy(isLoading = true) }
-
-            try {
+    private suspend fun loadWeather(
+        lat: Double,
+        lon: Double,
+    ) {
+        _weatherModel.update { it ->
+            when (it) {
+                is DataResource.Success -> DataResource.success(it.data)
+                is DataResource.Loading -> DataResource.loading(it.data)
+                is DataResource.Error -> DataResource.loading()
+            }
+        }
                 val weather = getWeatherUseCase(lat, lon)
-                saveWeatherUseCase(weather)
-                _weatherUiState.update {
-                    it.copy(
-                        isLoading = false,
-                        weather = weather,
-                        errorMessage = null
-                    )
+        Timber.d("weather use case - weather: $weather")
+                _weatherModel.update {
+                    when (weather) {
+                        is DataResource.Success -> DataResource.success(weather.data.toPresentation())
+                        is DataResource.Loading -> DataResource.loading(weather.data?.toPresentation())
+                        is DataResource.Error -> DataResource.error(weather.throwable)
+                    }
                 }
-            } catch (e: Exception) {
-                _weatherUiState.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = e.message ?: "Unknown error"
-                    )
-                }
-            }
-        }
     }
 
-    fun fetchWeatherWithCurrentLocation(context: Context) {
-        viewModelScope.launch {
-            val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-
-            val hasPermission = ContextCompat.checkSelfPermission(
-                context,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-
-            if (!hasPermission) {
-                // 권한이 없으면 요청하거나 예외 처리
-                return@launch
-            }
-
-            try {
-                val location = fusedLocationClient.lastLocation.await()
-                if (location != null) {
-                    val lat = location.latitude
-                    val lon = location.longitude
-                    loadWeather(lat, lon)
-                }
-            } catch (e: SecurityException) {
-                // 위치 권한 거부됨
-            } catch (e: Exception) {
-                // 다른 예외
-            }
-        }
-    }
-
-    fun saveBirthDate(year: String, month: String, day: String) {
-        viewModelScope.launch {
-            saveBirthDateUseCase(year, month, day)
-        }
-    }
-
-    fun loadBirthDate() {
+    private suspend fun loadBirthDate() {
         viewModelScope.launch {
             _birthDateState.update { it.copy(isLoading = true) }
 
-            try {
-                val birthDateString: String? = getBirthDateUseCase()
-                Log.e("확인", "birthDate: $birthDateString")
-                if (!birthDateString.isNullOrBlank()) {
-                    val parts = birthDateString.split("-")
-                    if (parts.size == 3) {
-                        _birthDateState.update {
-                            it.copy(
-                                year = parts[0],
-                                month = parts[1],
-                                day = parts[2],
-                                isLoading = false,
-                                errorMessage = null
-                            )
-                        }
-                    } else {
-                        _birthDateState.update {
-                            it.copy(
-                                isLoading = false,
-                                errorMessage = "잘못된 생년월일 형식입니다."
-                            )
-                        }
-                    }
-                } else {
-                    _birthDateState.update {
-                        it.copy(
-                            isLoading = false,
-                            errorMessage = "저장된 생년월일이 없습니다."
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                _birthDateState.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = e.message ?: "불러오기 오류"
-                    )
-                }
+            val savedBirthDate = getBirthDateUseCase()
+            _birthDateState.update {
+                it.copy(
+                    isLoading = false,
+                    year = savedBirthDate?.year ?: "",
+                    month = savedBirthDate?.month ?: "",
+                    day = savedBirthDate?.day ?: "",
+                )
             }
         }
     }
 
+    override fun saveLocation(
+        lat: Double,
+        lon: Double,
+    ) {
+        TODO("Not yet implemented")
+    }
 
+    override fun setBirthDateYear(year: String) {
+        TODO("Not yet implemented")
+    }
 
+    override fun setBirthDateMonth(month: String) {
+        TODO("Not yet implemented")
+    }
 
+    override fun setBirthDateDay(day: String) {
+        TODO("Not yet implemented")
+    }
 
+    override fun saveBirthDate() {
+        TODO("Not yet implemented")
+//        viewModelScope.launch {
+//            saveBirthDateUseCase(
+//                _birthDateState.value // todo: map to domain
+//            )
+//        }
+    }
 }

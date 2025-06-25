@@ -67,10 +67,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-
     implementation(libs.google.play.services.location)
     testImplementation(libs.junit)
-
     implementation(libs.hilt.navigation.compose)
     implementation(libs.google.dagger.hilt)
     implementation(libs.androidx.appcompat)
@@ -89,12 +87,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.converter)
     implementation(libs.timber)
-
-
-    implementation(libs.datastore.preferences)
-
     implementation(libs.coil.compose)
-
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
