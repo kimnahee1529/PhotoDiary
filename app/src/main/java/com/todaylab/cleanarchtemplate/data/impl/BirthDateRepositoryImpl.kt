@@ -1,5 +1,6 @@
 package com.todaylab.cleanarchtemplate.data.impl
 
+import com.todaylab.cleanarchtemplate.core.DataResource
 import com.todaylab.cleanarchtemplate.data.local.BirthDateLocalDataSource
 import com.todaylab.cleanarchtemplate.data.toData
 import com.todaylab.cleanarchtemplate.data.toDomain
@@ -11,11 +12,16 @@ class BirthDateRepositoryImpl @Inject constructor(
     private val birthDateLocalDataSource: BirthDateLocalDataSource
 ): BirthDateRepository{
     override suspend fun saveBirthDate(birthDate: BirthDate) {
-        return birthDateLocalDataSource.saveBirthDate(birthDate.toData())
+        birthDateLocalDataSource.saveBirthDate(birthDate.toData())
     }
 
-    override suspend fun getBirthDate(): BirthDate? {
-        return birthDateLocalDataSource.getBirthDate()?.toDomain()
+    override suspend fun getBirthDate(): DataResource<BirthDate> {
+        return when (val localBirthDate = birthDateLocalDataSource.getBirthDate()) {
+            is DataResource.Error -> localBirthDate
+            is DataResource.Loading -> DataResource.loading(localBirthDate.data?.toDomain())
+            is DataResource.Success -> DataResource.success(localBirthDate.data.toDomain())
+            else -> DataResource.error(Throwable("data layer error - Unknown error"))
+        }
     }
 
 }
