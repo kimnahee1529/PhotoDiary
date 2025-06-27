@@ -3,11 +3,13 @@ package com.todaylab.cleanarchtemplate.local.room
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.todaylab.cleanarchtemplate.local.model.LuckyResultLocal
 import com.todaylab.cleanarchtemplate.local.model.WeatherLocal
+import com.todaylab.cleanarchtemplate.local.room.dao.LuckyResultDao
 import com.todaylab.cleanarchtemplate.local.room.dao.WeatherDao
 
 @Database(
-    entities = [WeatherLocal::class],
+    entities = [WeatherLocal::class, LuckyResultLocal::class],
     version = RoomConstant.ROOM_VERSION
 )
 @TypeConverters(
@@ -15,6 +17,7 @@ import com.todaylab.cleanarchtemplate.local.room.dao.WeatherDao
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun weatherDao(): WeatherDao
+    abstract fun luckyDao(): LuckyResultDao
 }
 
 /**

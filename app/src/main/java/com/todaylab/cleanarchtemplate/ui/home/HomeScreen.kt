@@ -1,8 +1,15 @@
 package com.todaylab.cleanarchtemplate.ui.home
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,34 +20,44 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.todaylab.cleanarchtemplate.R
 import com.todaylab.cleanarchtemplate.core.DataResource
-import com.todaylab.cleanarchtemplate.presentation.home.HomeEvent
 import com.todaylab.cleanarchtemplate.presentation.home.HomeViewModel
+import com.todaylab.cleanarchtemplate.presentation.navigation.AppRoute
 import com.todaylab.cleanarchtemplate.ui.model.BirthDateState
 import com.todaylab.cleanarchtemplate.ui.model.HomeState
 import com.todaylab.cleanarchtemplate.ui.model.WeatherState
+import com.todaylab.cleanarchtemplate.ui.theme.colors
 import com.todaylab.cleanarchtemplate.ui.toUi
 import com.todaylab.cleanarchtemplate.ui.widget.InputCompleteButton
 import com.todaylab.cleanarchtemplate.ui.widget.WheelSpinner
-import java.util.Date
 
 data class SpinnerState(
     val label: String,
@@ -50,17 +67,49 @@ data class SpinnerState(
 
 @Composable
 fun HomeRoute(
-    navToResult: () -> Unit,
+    navController: NavHostController,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
+
     val homeStateModel by viewModel.stateModel.collectAsState()
     val homeState = remember(homeStateModel) { homeStateModel.toUi() }
 
+    var isPermissionGranted by remember { mutableStateOf(false) }
+    val permissionLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission(),
+            onResult = { isGranted ->
+                Log.e("isGranted 권한", isGranted.toString())
+                if (isGranted) {
+                    isPermissionGranted = true
+//                viewModel.fetchWeatherWithCurrentLocation(context)
+                }
+            },
+        )
+
+    LaunchedEffect(Unit) {
+        isPermissionGranted = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (!isPermissionGranted) {
+            permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        } else {
+//            viewModel.fetchWeatherWithCurrentLocation(context)
+        }
+    }
+
     HomeScreen(
         homeState = homeState,
-        homeEvent = viewModel.event,
-        navToResult = navToResult,
-        modifier = Modifier.fillMaxSize()
+        isPermissionGranted = isPermissionGranted,
+        onNextClick = { year, month, day ->
+//            viewModel.saveBirthDate(year = year, month = month, day = day)
+        },
+        onNavigate = { route ->
+            navController.navigate(route)
+        },
     )
 }
 
@@ -68,161 +117,259 @@ fun HomeRoute(
 @Composable
 fun HomeScreen(
     homeState: HomeState,
-    homeEvent: HomeEvent,
-    navToResult: () -> Unit,
-    modifier: Modifier = Modifier
+    isPermissionGranted: Boolean,
+    onNextClick: (String, String, String) -> Unit,
+    onNavigate: (String) -> Unit,
 ) {
+    // 생년월일 선택 상태
     var year by remember { mutableStateOf("") }
     var month by remember { mutableStateOf("") }
     var day by remember { mutableStateOf("") }
 
+    LaunchedEffect(year) {
+        Log.e("확인", "year: $year, month: $month, day: $day")
+    }
     // Dialog 상태
     var spinnerDialogState by remember {
         mutableStateOf<SpinnerState?>(null)
     }
 
     Scaffold(
-        modifier = modifier.background(color = Color.White),
+        modifier = Modifier.background(color = Color.White),
         topBar = {
             TopAppBar(
                 title = {
                     Column {
                         Text("오늘 행운을 찾으러 가봐요!")
                         Spacer(modifier = Modifier.weight(1f))
-                        CurrentWeatherIcon(
-                            weather = homeState.weather,
-                            shouldRequestLocationPermission = true,
-                            saveLocation = homeEvent::saveLocation,
-                            modifier = Modifier
-                                .width(120.dp)
-                                .height(120.dp)
-                        )
+                        WeatherIcon(homeState.weather)
                     }
                 },
             )
         },
         bottomBar = {
             InputCompleteButton(
-                modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                    .navigationBarsPadding(),
+                modifier =
+                    Modifier
+                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                        .navigationBarsPadding(),
                 text = "확인하기",
                 onNextClick = {
-                    homeEvent.saveBirthDate(year, month, day)
-                    navToResult()
+                    onNextClick(year, month, day)
+                    onNavigate(AppRoute.LuckyResult.route)
                 },
             )
         },
     ) { innerPadding ->
+
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(innerPadding)
-                .padding(horizontal = 20.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(innerPadding)
+                    .padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Image(
                 painter = painterResource(id = R.drawable.lucky),
                 contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
             )
-
-//            BirthDateInput(
-//                year = year,
-//                month = month,
-//                day = day,
-//                onYearChange = { year = it },
-//                onMonthChange = { month = it },
-//                onDayChange = { day = it },
-//            )
-
             // 생년월일 WheelSpinner 텍스트필드
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(24.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(24.dp),
             ) {
                 WheelSpinnerSelector(
                     modifier = Modifier.weight(2f),
-                    savedText = homeState.birthDate.getDataOrNull()?.year ?: "",
+                    savedText = homeState.birthDate.year,
                     selectedText = year,
                     label = "년",
                     onClick = {
-                        spinnerDialogState = SpinnerState(
-                            label = "년",
-                            items = listOf(
-                                "",
-                                "",
-                                * (1900..2024).map { it.toString() }.toTypedArray(),
-                                "",
-                                ""
-                            ),
-                            onSelected = { year = it }
-                        )
-                    }
+                        spinnerDialogState =
+                            SpinnerState(
+                                label = "년",
+                                items =
+                                    listOf(
+                                        "",
+                                        "",
+                                        * (1900..2024).map { it.toString() }.toTypedArray(),
+                                        "",
+                                        "",
+                                    ),
+                                onSelected = { year = it },
+                            )
+                    },
                 )
 
                 WheelSpinnerSelector(
                     modifier = Modifier.weight(1f),
-                    savedText = homeState.birthDate.getDataOrNull()?.month ?: "",
+                    savedText = homeState.birthDate.month,
                     selectedText = month,
                     label = "월",
                     onClick = {
-                        spinnerDialogState = SpinnerState(
-                            label = "월",
-                            items = listOf(
-                                "",
-                                "",
-                                * (1..12).map { it.toString() }.toTypedArray(),
-                                "",
-                                ""
-                            ),
-                            onSelected = { month = it }
-                        )
-                    }
+                        spinnerDialogState =
+                            SpinnerState(
+                                label = "월",
+                                items =
+                                    listOf(
+                                        "",
+                                        "",
+                                        * (1..12).map { it.toString() }.toTypedArray(),
+                                        "",
+                                        "",
+                                    ),
+                                onSelected = { month = it },
+                            )
+                    },
                 )
 
                 WheelSpinnerSelector(
                     modifier = Modifier.weight(1f),
-                    savedText = homeState.birthDate.getDataOrNull()?.day ?: "",
+                    savedText = homeState.birthDate.day,
                     selectedText = day,
                     label = "일",
                     onClick = {
-                        spinnerDialogState = SpinnerState(
-                            label = "일",
-                            items = listOf(
-                                "",
-                                "",
-                                * (1..31).map { it.toString() }.toTypedArray(),
-                                "",
-                                ""
-                            ),
-                            onSelected = { day = it }
-                        )
-                    }
+                        spinnerDialogState =
+                            SpinnerState(
+                                label = "일",
+                                items =
+                                    listOf(
+                                        "",
+                                        "",
+                                        * (1..31).map { it.toString() }.toTypedArray(),
+                                        "",
+                                        "",
+                                    ),
+                                onSelected = { day = it },
+                            )
+                    },
                 )
             }
-        }
 
-        // 실제 다이얼로그는 최하단에서 그려야 안전
-        spinnerDialogState?.let { state ->
-            CenteredButtonDialog(
-                onDismissRequest = { spinnerDialogState = null },
-                onConfirm = { spinnerDialogState = null },
-                content = {
-                    WheelSpinner(
-                        items = state.items,
-                        onSelected = {
-                            state.onSelected(it)
-                        },
+            Text("메인 화면 - 권한 허용 ${if (isPermissionGranted) "O" else "X"}")
+
+//            Text(
+//                text = "오늘 행운 템플릿 앱입니다~",
+//                fontSize = 140.sp
+//            )
+        }
+    }
+
+    // 실제 다이얼로그는 최하단에서 그려야 안전
+    spinnerDialogState?.let { state ->
+        CenteredButtonDialog(
+            onDismissRequest = { spinnerDialogState = null },
+            onConfirm = { spinnerDialogState = null },
+            content = {
+                WheelSpinner(
+                    items = state.items,
+                    onSelected = {
+                        state.onSelected(it)
+                    },
+                )
+            },
+        )
+    }
+}
+
+@Composable
+fun WheelSpinnerSelector(
+    modifier: Modifier = Modifier,
+    savedText: String,
+    selectedText: String,
+    label: String = "",
+    onClick: () -> Unit,
+) {
+    Row(modifier = modifier) {
+        Box(
+            modifier =
+                Modifier
+                    .height(50.dp)
+                    .weight(1f)
+                    .background(
+                        color = MaterialTheme.colors.grey2,
+                        shape = RoundedCornerShape(6.dp)
                     )
-                },
+                    .clickable { onClick() },
+            contentAlignment = Alignment.CenterStart,
+        ) {
+            Text(
+                text =
+                    if (selectedText.isNotBlank()) {
+                        selectedText
+                    } else if (savedText.isNotBlank()) {
+                        savedText
+                    } else {
+                        ""
+                    },
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(horizontal = 12.dp),
+                color = if (selectedText.isNotBlank()) Color.Black else Color.Gray,
             )
         }
+        Spacer(modifier = Modifier.width(2.dp))
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            modifier = Modifier.align(Alignment.Bottom),
+        )
+    }
+}
+
+@Composable
+fun CenteredButtonDialog(
+    onDismissRequest: () -> Unit,
+    content: @Composable () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    Dialog(onDismissRequest = onDismissRequest) {
+        Surface(
+            shape = RoundedCornerShape(12.dp),
+            color = Color.White,
+        ) {
+            Column(
+                modifier =
+                    Modifier
+                        .padding(24.dp)
+                        .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                content()
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(onClick = onConfirm) {
+                    Text("확인")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun WeatherIcon(
+    weather: DataResource<WeatherState>,
+    modifier: Modifier = Modifier,
+) {
+    when (weather) {
+        is DataResource.Loading -> Text(
+            text = "Loading... ${weather.data?.icon}",
+            modifier = modifier
+        )
+
+        is DataResource.Success -> Text(text = "${weather.data.icon}", modifier = modifier)
+        is DataResource.Error -> Text(
+            text = "Error: ${weather.throwable.message}",
+            modifier = modifier
+        )
     }
 }
 
@@ -230,25 +377,26 @@ fun HomeScreen(
 @Composable
 private fun PreviewMainScreen() {
     HomeScreen(
-        homeState = HomeState(
-            weather = DataResource.success(
-                WeatherState(
-                    date = Date(),
-                    lat = 0.0,
-                    lon = 0.0,
-                    main = "clear",
-                    description = "clear sky",
-                    icon = "02d",
-                )
+        homeState =
+            HomeState(
+                weather = DataResource.loading(),
+                birthDate = BirthDateState(year = "1999", month = "12", day = "14"),
             ),
-            birthDate = DataResource.success(
-                BirthDateState("1999", "12", "14")
-            ),
-        ),
-        homeEvent = object : HomeEvent {
-            override fun saveLocation(lat: Double, lon: Double) {}
-            override fun saveBirthDate(year: String, month: String, day: String) {}
-        },
-        navToResult = {},
+        isPermissionGranted = true,
+        onNextClick = { _, _, _ -> },
+        onNavigate = {},
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewWheelSpinnerSelector() {
+    val yearItems = (1980..2025).map { it.toString() }
+
+    WheelSpinnerSelector(
+        savedText = "2023",
+        selectedText = "2023",
+        label = "년",
+        onClick = {},
     )
 }

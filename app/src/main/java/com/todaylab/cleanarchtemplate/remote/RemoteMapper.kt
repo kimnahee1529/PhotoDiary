@@ -14,5 +14,7 @@ internal fun WeatherResponse.toData(): WeatherEntity {
         weatherMain = this.weather.firstOrNull()?.main ?: "Unknown",
         weatherDesc = this.weather.firstOrNull()?.description ?: "No description",
         weatherIcon = this.weather.firstOrNull()?.icon ?: "Unknown",
+        timestamp = System.currentTimeMillis()
+
     )
 }

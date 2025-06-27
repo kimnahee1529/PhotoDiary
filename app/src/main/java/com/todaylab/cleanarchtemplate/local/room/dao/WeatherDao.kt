@@ -22,15 +22,15 @@ interface WeatherDao {
                 "FROM ${RoomConstant.TABLE.USER_WEATHER} " +
                 "WHERE id= $WEATHER_ID AND lat = :lat AND lon = :lon "
     )
-    fun getWeather(lat: Double, lon: Double): WeatherLocal?
+    suspend fun getWeather(lat: Double, lon: Double): WeatherLocal?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun saveWeather(weather: WeatherLocal)
+    suspend fun saveWeather(weather: WeatherLocal)
 
     @Query(
         "DELETE " +
                 "FROM ${RoomConstant.TABLE.USER_WEATHER} " +
                 "WHERE id= $WEATHER_ID "
     )
-    fun deleteWeather()
+    suspend fun deleteWeather()
 }

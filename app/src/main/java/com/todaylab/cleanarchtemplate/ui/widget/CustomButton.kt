@@ -156,6 +156,34 @@ fun LuckyButton(
     }
 }
 
+@Composable
+fun LuckyDialogButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    colors : ButtonColors = ButtonDefaults.buttonColors(
+        containerColor = MaterialTheme.colors.primary,
+        contentColor = MaterialTheme.colors.gray10
+    )
+){
+    Button(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 80.dp)
+            .height(50.dp),
+        onClick = onClick,
+        shape = RoundedCornerShape(12.dp),
+        enabled = enabled,
+        colors = colors
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typo.button,
+        )
+    }
+}
+
 @Preview
 @Composable
 private fun ButtonPreview() {
@@ -176,8 +204,16 @@ private fun InputCompleteButtonPreview() {
 
 @Preview
 @Composable
-private fun Preview() {
+private fun LuckyButtonPreview() {
     LuckyTheme {
         LuckyButton(text = "농작물",{})
+    }
+}
+
+@Preview
+@Composable
+private fun LuckyDialogButtonPreview() {
+    LuckyTheme {
+        LuckyDialogButton(text = "농작물",{})
     }
 }
