@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -76,6 +77,10 @@ fun HomeScreen(
     var month by remember { mutableStateOf("") }
     var day by remember { mutableStateOf("") }
 
+    // Dialog 상태
+    var spinnerDialogState by remember {
+        mutableStateOf<SpinnerState?>(null)
+    }
 
     Scaffold(
         modifier = modifier.background(color = Color.White),
@@ -126,14 +131,82 @@ fun HomeScreen(
                     .padding(horizontal = 16.dp),
             )
 
-            BirthDateInput(
-                year = year,
-                month = month,
-                day = day,
-                onYearChange = { year = it },
-                onMonthChange = { month = it },
-                onDayChange = { day = it },
-            )
+//            BirthDateInput(
+//                year = year,
+//                month = month,
+//                day = day,
+//                onYearChange = { year = it },
+//                onMonthChange = { month = it },
+//                onDayChange = { day = it },
+//            )
+
+            // 생년월일 WheelSpinner 텍스트필드
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                WheelSpinnerSelector(
+                    modifier = Modifier.weight(2f),
+                    savedText = homeState.birthDate.getDataOrNull()?.year ?: "",
+                    selectedText = year,
+                    label = "년",
+                    onClick = {
+                        spinnerDialogState = SpinnerState(
+                            label = "년",
+                            items = listOf(
+                                "",
+                                "",
+                                * (1900..2024).map { it.toString() }.toTypedArray(),
+                                "",
+                                ""
+                            ),
+                            onSelected = { year = it }
+                        )
+                    }
+                )
+
+                WheelSpinnerSelector(
+                    modifier = Modifier.weight(1f),
+                    savedText = homeState.birthDate.getDataOrNull()?.month ?: "",
+                    selectedText = month,
+                    label = "월",
+                    onClick = {
+                        spinnerDialogState = SpinnerState(
+                            label = "월",
+                            items = listOf(
+                                "",
+                                "",
+                                * (1..12).map { it.toString() }.toTypedArray(),
+                                "",
+                                ""
+                            ),
+                            onSelected = { month = it }
+                        )
+                    }
+                )
+
+                WheelSpinnerSelector(
+                    modifier = Modifier.weight(1f),
+                    savedText = homeState.birthDate.getDataOrNull()?.day ?: "",
+                    selectedText = day,
+                    label = "일",
+                    onClick = {
+                        spinnerDialogState = SpinnerState(
+                            label = "일",
+                            items = listOf(
+                                "",
+                                "",
+                                * (1..31).map { it.toString() }.toTypedArray(),
+                                "",
+                                ""
+                            ),
+                            onSelected = { day = it }
+                        )
+                    }
+                )
+            }
         }
     }
 }
