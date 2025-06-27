@@ -15,10 +15,11 @@ import com.todaylab.cleanarchtemplate.presentation.toPresentation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -50,20 +51,22 @@ class HomeViewModel
     private val _lon = MutableStateFlow<Double?>(null)
     private val _weather = MutableStateFlow<DataResource<WeatherModel>>(DataResource.loading())
     private val _birthDate = MutableStateFlow<DataResource<BirthDateModel>>(DataResource.loading())
-    private val _stateModel = MutableStateFlow<HomeStateModel>(HomeStateModel())
 
-    val stateModel: StateFlow<HomeStateModel> = _stateModel.asStateFlow()
+    // Directly combine flows to create the stateModel
+    val stateModel: StateFlow<HomeStateModel> = combine(
+        _weather,
+        _birthDate
+    ) { weather, birthDate ->
+        HomeStateModel(weather = weather, birthDate = birthDate)
+    }.stateIn( // Use stateIn to convert the combined flow to a StateFlow
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = HomeStateModel()
+    )
+
     val event: HomeEvent = this@HomeViewModel
 
     init {
-        // collect custom exception
-        viewModelScopeEH.launch {
-            customException.collect {
-                Timber.e(it.message)
-            }
-        }
-
-        // load saved birth date on init
         loadBirthDate()
 
         // load weather when current location is updated
@@ -71,42 +74,29 @@ class HomeViewModel
             combine(_lat, _lon) { lat, lon ->
                 lat to lon
             }.collectLatest { (lat, lon) ->
-                loadWeather()
+                if (lat == null || lon == null) return@collectLatest
+                loadWeather(lat, lon)
             }
         }
 
-        // update home state model
+        // collect custom exception
         viewModelScopeEH.launch {
-            combine(_weather, _birthDate) { weather, birthDate ->
-                weather to birthDate
-            }.collectLatest { (weather, birthDate) ->
-                _stateModel.update {
-                    it.copy(
-                        weather = weather,
-                        birthDate = birthDate,
-                    )
-                }
+            customException.collect {
+                Timber.e(it.message)
             }
         }
     }
 
     private fun loadWeather(
+        lat: Double,
+        lon: Double,
     ) {
         viewModelScopeEH.launch(Dispatchers.IO) {
-            /// 1. set weather to loading state
             _weather.update {
-                DataResource.loading(
-                    when (it) {
-                        is DataResource.Success -> (it.data)
-                        is DataResource.Loading -> (it.data)
-                        is DataResource.Error -> null
-                    }
-                )
+                DataResource.loading(it.getDataOrNull())
             }
-            //  2. update weather state
             _weather.update {
-                if (_lat.value == null || _lon.value == null) DataResource.error(Throwable("location is null"))
-                else when (val newWeather = getWeatherUseCase(_lat.value!!, _lon.value!!)) {
+                when (val newWeather = getWeatherUseCase(lat, lon)) {
                     is DataResource.Success -> DataResource.success(newWeather.data.toPresentation())
                     is DataResource.Loading -> DataResource.loading(newWeather.data?.toPresentation())
                     is DataResource.Error -> DataResource.error(newWeather.throwable)
@@ -117,17 +107,9 @@ class HomeViewModel
 
     private fun loadBirthDate() {
         viewModelScopeEH.launch(Dispatchers.IO) {
-            /// 1. set birth date to loading state
             _birthDate.update {
-                DataResource.loading(
-                    when (it) {
-                        is DataResource.Success -> (it.data)
-                        is DataResource.Loading -> (it.data)
-                        is DataResource.Error -> null
-                    }
-                )
+                DataResource.loading(it.getDataOrNull())
             }
-            // 2. update birth date state
             _birthDate.update {
                 when (val savedBirthDate = getBirthDateUseCase()) {
                     is DataResource.Success -> DataResource.success(savedBirthDate.data.toPresentation())
@@ -153,15 +135,12 @@ class HomeViewModel
         month: String,
         day: String,
     ) {
-        // 1. update birth date state
+        val newBirthDate = BirthDateModel(year, month, day)
         _birthDate.update {
-            DataResource.success(BirthDateModel(year, month, day))
+            DataResource.success(newBirthDate)
         }
-        // 2. save birth date
         viewModelScope.launch(Dispatchers.IO) {
-            saveBirthDateUseCase(
-                BirthDateModel(year, month, day).toDomain()
-            )
+            saveBirthDateUseCase(newBirthDate.toDomain())
         }
     }
 }

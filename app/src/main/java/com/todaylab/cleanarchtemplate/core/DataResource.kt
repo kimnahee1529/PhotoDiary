@@ -12,6 +12,14 @@ sealed class DataResource<out T> {
         fun <T> loading(data: T? = null) = Loading(data)
     }
 
+    fun getDataOrNull(): T? {
+        return when (this) {
+            is Success -> data
+            is Error -> null
+            is Loading -> data
+        }
+    }
+
     // override toString() for debug purpose
     override fun toString(): String {
         return when (this) {
