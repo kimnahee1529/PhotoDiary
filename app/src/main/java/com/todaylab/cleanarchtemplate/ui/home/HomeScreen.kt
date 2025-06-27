@@ -39,6 +39,7 @@ import com.todaylab.cleanarchtemplate.ui.model.HomeState
 import com.todaylab.cleanarchtemplate.ui.model.WeatherState
 import com.todaylab.cleanarchtemplate.ui.toUi
 import com.todaylab.cleanarchtemplate.ui.widget.InputCompleteButton
+import com.todaylab.cleanarchtemplate.ui.widget.WheelSpinner
 import java.util.Date
 
 data class SpinnerState(
@@ -205,6 +206,22 @@ fun HomeScreen(
                     }
                 )
             }
+        }
+
+        // 실제 다이얼로그는 최하단에서 그려야 안전
+        spinnerDialogState?.let { state ->
+            CenteredButtonDialog(
+                onDismissRequest = { spinnerDialogState = null },
+                onConfirm = { spinnerDialogState = null },
+                content = {
+                    WheelSpinner(
+                        items = state.items,
+                        onSelected = {
+                            state.onSelected(it)
+                        },
+                    )
+                },
+            )
         }
     }
 }
