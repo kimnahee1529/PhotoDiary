@@ -1,6 +1,6 @@
 package com.todaylab.cleanarchtemplate.local.mapper
 
-import com.todaylab.cleanarchtemplate.core.base.BaseModelMapper
+import com.todaylab.cleanarchtemplate.core.BaseModelMapper
 import com.todaylab.cleanarchtemplate.data.model.LuckyResultEntity
 import com.todaylab.cleanarchtemplate.local.model.LuckyResultLocal
 
