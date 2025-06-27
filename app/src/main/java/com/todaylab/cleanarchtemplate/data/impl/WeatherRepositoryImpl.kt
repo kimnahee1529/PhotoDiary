@@ -14,33 +14,19 @@ class WeatherRepositoryImpl @Inject constructor(
     private val weatherLocalDataSource: WeatherLocalDataSource
 ) : WeatherRepository {
     override suspend fun getWeather(lat: Double, lon: Double): DataResource<Weather> {
-        // 1. get weather from local
-        // todo: 저장된 날씨 정보가 3시간 이내의 정보인 경우, 데이터 갱신하기
-
-        val localWeather = weatherLocalDataSource.getWeather(lat, lon)
-        if (localWeather != null) {
-            Timber.d("weather repo impl - local weather: ${localWeather.toDomain()}")
-            return DataResource.success(localWeather.toDomain())
+        val localWeather = weatherLocalDataSource.getFreshWeather(lat, lon)
+        Timber.d("weather repo impl - local weather: ${localWeather}")
+        if (localWeather is DataResource.Success) {
+            return DataResource.success(localWeather.data.toDomain())
         }
-        Timber.d("weather repo impl - local weather is null")
-
-        // 2. get weather from remote
 
         val remoteWeather = weatherRemoteDataSource.getWeather(lat, lon)
         Timber.d("weather repo impl - remote weather: ${remoteWeather}")
-        when (remoteWeather) {
-            is DataResource.Error -> {
-                return remoteWeather
-            }
-
-            is DataResource.Loading -> {
-                return DataResource.loading(remoteWeather.data?.toDomain())
-            }
-
-            is DataResource.Success -> {
-                weatherLocalDataSource.saveWeather(remoteWeather.data)
-                return DataResource.success(remoteWeather.data.toDomain())
-            }
-        }
+        // todo: fix code
+        if (remoteWeather is DataResource.Success || remoteWeather is DataResource.Loading) {
+            return DataResource.success(
+                remoteWeather.getDataOrNull()?.toDomain()
+            ) as DataResource<Weather>
+        } else return DataResource.error(Throwable("remote layer error - Unknown error"))
     }
 }
