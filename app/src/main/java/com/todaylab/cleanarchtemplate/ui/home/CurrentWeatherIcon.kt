@@ -101,13 +101,12 @@ private fun WeatherIcon(
             contentDescription = weather.data.main,
             modifier = modifier,
         ) else Text("Loading...")
-
+        is DataResource.Empty -> Text("Empty", modifier = modifier)
         is DataResource.Success -> AsyncImage(
             model = "https://openweathermap.org/img/wn/${weather.data.icon}@2x.png",
             contentDescription = weather.data.main,
             modifier = modifier,
         )
-
         is DataResource.Error -> Text(
             text = "Error: ${weather.throwable.message}", modifier = modifier
         )

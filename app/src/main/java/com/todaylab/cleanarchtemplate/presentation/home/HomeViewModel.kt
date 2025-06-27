@@ -98,6 +98,7 @@ class HomeViewModel
             _weather.update {
                 when (val newWeather = getWeatherUseCase(lat, lon)) {
                     is DataResource.Success -> DataResource.success(newWeather.data.toPresentation())
+                    is DataResource.Empty -> DataResource.empty()
                     is DataResource.Loading -> DataResource.loading(newWeather.data?.toPresentation())
                     is DataResource.Error -> DataResource.error(newWeather.throwable)
                 }
@@ -113,9 +114,9 @@ class HomeViewModel
             _birthDate.update {
                 when (val savedBirthDate = getBirthDateUseCase()) {
                     is DataResource.Success -> DataResource.success(savedBirthDate.data.toPresentation())
+                    is DataResource.Empty -> DataResource.empty()
                     is DataResource.Loading -> DataResource.loading(savedBirthDate.data?.toPresentation())
                     is DataResource.Error -> DataResource.error(savedBirthDate.throwable)
-                    else -> DataResource.error(Throwable("presentation layer error - Unknown error"))
                 }
             }
         }

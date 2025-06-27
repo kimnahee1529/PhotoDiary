@@ -18,9 +18,9 @@ class BirthDateRepositoryImpl @Inject constructor(
     override suspend fun getBirthDate(): DataResource<BirthDate> {
         return when (val localBirthDate = birthDateLocalDataSource.getBirthDate()) {
             is DataResource.Error -> localBirthDate
+            is DataResource.Empty -> DataResource.empty()
             is DataResource.Loading -> DataResource.loading(localBirthDate.data?.toDomain())
             is DataResource.Success -> DataResource.success(localBirthDate.data.toDomain())
-            else -> DataResource.error(Throwable("data layer error - Unknown error"))
         }
     }
 

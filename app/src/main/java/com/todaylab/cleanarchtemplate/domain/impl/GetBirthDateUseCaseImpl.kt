@@ -9,7 +9,7 @@ import javax.inject.Inject
 class GetBirthDateUseCaseImpl @Inject constructor(
     private val birthDateRepository: BirthDateRepository,
 ): GetBirthDateUseCase {
-    override suspend operator fun invoke(): DataResource<BirthDate>? {
+    override suspend operator fun invoke(): DataResource<BirthDate> {
         return birthDateRepository.getBirthDate()
     }
 }

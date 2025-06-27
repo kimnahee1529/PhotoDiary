@@ -7,6 +7,6 @@ interface WeatherLocalDataSource {
     /**
      * Get weather within 3 hours from local data source
      */
-    suspend fun getFreshWeather(lat: Double, lon: Double): DataResource<WeatherEntity>?
+    suspend fun getFreshWeather(lat: Double, lon: Double): DataResource<WeatherEntity>
     suspend fun saveWeather(weather: WeatherEntity)
 }

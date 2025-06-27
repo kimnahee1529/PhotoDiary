@@ -23,13 +23,13 @@ class BirthDateLocalDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun getBirthDate(): DataResource<BirthDateEntity>? {
+    override suspend fun getBirthDate(): DataResource<BirthDateEntity> {
         try {
             val prefs = context.birthDateDataStore.data.first()
             val y = prefs[BirthDateKeys.YEAR]
             val m = prefs[BirthDateKeys.MONTH]
             val d = prefs[BirthDateKeys.DAY]
-            if (y == null || m == null || d == null) return null
+            if (y == null || m == null || d == null) return DataResource.empty()
             return DataResource.success(BirthDateEntity(y, m, d))
         } catch (e: Exception) {
             return DataResource.error(Throwable("local layer error - ${e.message}"))

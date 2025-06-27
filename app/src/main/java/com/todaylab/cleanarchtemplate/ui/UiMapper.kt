@@ -26,11 +26,13 @@ internal fun BirthDateModel.toUi() = BirthDateState(
 internal fun HomeStateModel.toUi() = HomeState(
     weather = when (weather) {
         is DataResource.Success -> DataResource.success(weather.data.toUi())
+        is DataResource.Empty -> DataResource.empty()
         is DataResource.Loading -> DataResource.loading(weather.data?.toUi())
         is DataResource.Error -> DataResource.error(weather.throwable)
     },
     birthDate = when (birthDate) {
         is DataResource.Success -> DataResource.success(birthDate.data.toUi())
+        is DataResource.Empty -> DataResource.empty()
         is DataResource.Loading -> DataResource.loading(birthDate.data?.toUi())
         is DataResource.Error -> DataResource.error(birthDate.throwable)
     },
