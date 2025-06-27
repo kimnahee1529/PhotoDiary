@@ -96,12 +96,7 @@ class HomeViewModel
                 DataResource.loading(it.getDataOrNull())
             }
             _weather.update {
-                when (val newWeather = getWeatherUseCase(lat, lon)) {
-                    is DataResource.Success -> DataResource.success(newWeather.data.toPresentation())
-                    is DataResource.Empty -> DataResource.empty()
-                    is DataResource.Loading -> DataResource.loading(newWeather.data?.toPresentation())
-                    is DataResource.Error -> DataResource.error(newWeather.throwable)
-                }
+                getWeatherUseCase(lat, lon).mapData { it.toPresentation() }
             }
         }
     }
@@ -112,12 +107,7 @@ class HomeViewModel
                 DataResource.loading(it.getDataOrNull())
             }
             _birthDate.update {
-                when (val savedBirthDate = getBirthDateUseCase()) {
-                    is DataResource.Success -> DataResource.success(savedBirthDate.data.toPresentation())
-                    is DataResource.Empty -> DataResource.empty()
-                    is DataResource.Loading -> DataResource.loading(savedBirthDate.data?.toPresentation())
-                    is DataResource.Error -> DataResource.error(savedBirthDate.throwable)
-                }
+                getBirthDateUseCase().mapData { it.toPresentation() }
             }
         }
     }

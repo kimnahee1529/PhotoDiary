@@ -37,13 +37,6 @@ class WeatherRepositoryImpl @Inject constructor(
 
         val remoteWeather = weatherRemoteDataSource.getWeather(lat, lon)
         Timber.d("weather repo impl - remote weather: ${remoteWeather}")
-
-        // todo: refactor code using mapData function
-        return when (remoteWeather) {
-            is DataResource.Success -> DataResource.success(remoteWeather.data.toDomain())
-            is DataResource.Empty -> DataResource.empty()
-            is DataResource.Loading -> DataResource.loading(remoteWeather.data?.toDomain())
-            is DataResource.Error -> DataResource.error(remoteWeather.throwable)
-        }
+        return remoteWeather.mapData { it.toDomain() }
     }
 }

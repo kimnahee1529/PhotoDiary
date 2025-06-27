@@ -16,12 +16,8 @@ class BirthDateRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getBirthDate(): DataResource<BirthDate> {
-        return when (val localBirthDate = birthDateLocalDataSource.getBirthDate()) {
-            is DataResource.Error -> localBirthDate
-            is DataResource.Empty -> DataResource.empty()
-            is DataResource.Loading -> DataResource.loading(localBirthDate.data?.toDomain())
-            is DataResource.Success -> DataResource.success(localBirthDate.data.toDomain())
-        }
+        val localBirthDate = birthDateLocalDataSource.getBirthDate()
+        return localBirthDate.mapData { it.toDomain() }
     }
 
 }
