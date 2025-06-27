@@ -1,9 +1,11 @@
 package com.todaylab.cleanarchtemplate.domain.di
 
 import com.todaylab.cleanarchtemplate.domain.impl.GetBirthDateUseCaseImpl
+import com.todaylab.cleanarchtemplate.domain.impl.GetLuckyResultUseCaseImpl
 import com.todaylab.cleanarchtemplate.domain.impl.GetWeatherUseCaseImpl
 import com.todaylab.cleanarchtemplate.domain.impl.SaveBirthDateUseCaseImpl
 import com.todaylab.cleanarchtemplate.domain.usecase.GetBirthDateUseCase
+import com.todaylab.cleanarchtemplate.domain.usecase.GetLuckyResultUseCase
 import com.todaylab.cleanarchtemplate.domain.usecase.GetWeatherUseCase
 import com.todaylab.cleanarchtemplate.domain.usecase.SaveBirthDateUseCase
 import dagger.Binds
@@ -28,5 +30,8 @@ abstract class UseCaseModule {
     @Singleton
     abstract fun bindGetBirthDateUseCase(impl: GetBirthDateUseCaseImpl): GetBirthDateUseCase
 
+    @Binds
+    @Singleton
+    abstract fun bindGetLuckyResultUseCase(impl: GetLuckyResultUseCaseImpl): GetLuckyResultUseCase
 
 }

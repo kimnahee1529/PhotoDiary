@@ -1,8 +1,10 @@
 package com.todaylab.cleanarchtemplate.presentation
 
 import com.todaylab.cleanarchtemplate.domain.model.BirthDate
+import com.todaylab.cleanarchtemplate.domain.model.LuckyResult
 import com.todaylab.cleanarchtemplate.domain.model.Weather
 import com.todaylab.cleanarchtemplate.presentation.model.BirthDateModel
+import com.todaylab.cleanarchtemplate.presentation.model.LuckyResultModel
 import com.todaylab.cleanarchtemplate.presentation.model.WeatherModel
 
 internal fun Weather.toPresentation() = WeatherModel(
@@ -18,4 +20,13 @@ internal fun BirthDate.toPresentation() = BirthDateModel(
     year = year,
     month = month,
     day = day,
+)
+
+internal fun LuckyResult.toPresentation() = LuckyResultModel(
+    id = id,
+    date = date,
+    animal = animal,
+    numbers = numbers,
+    initials = initials,
+    color = color
 )

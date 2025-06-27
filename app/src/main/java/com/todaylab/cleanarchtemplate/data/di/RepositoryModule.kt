@@ -1,8 +1,10 @@
 package com.todaylab.cleanarchtemplate.data.di
 
 import com.todaylab.cleanarchtemplate.data.impl.BirthDateRepositoryImpl
+import com.todaylab.cleanarchtemplate.data.impl.LuckyResultRepositoryImpl
 import com.todaylab.cleanarchtemplate.data.impl.WeatherRepositoryImpl
 import com.todaylab.cleanarchtemplate.domain.repository.BirthDateRepository
+import com.todaylab.cleanarchtemplate.domain.repository.LuckyResultRepository
 import com.todaylab.cleanarchtemplate.domain.repository.WeatherRepository
 import dagger.Binds
 import dagger.Module
@@ -21,4 +23,9 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindBirthDateRepository(impl: BirthDateRepositoryImpl): BirthDateRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindLuckyResultRepository(impl: LuckyResultRepositoryImpl): LuckyResultRepository
+
 }

@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -57,7 +56,9 @@ import com.todaylab.cleanarchtemplate.ui.model.WeatherState
 import com.todaylab.cleanarchtemplate.ui.theme.colors
 import com.todaylab.cleanarchtemplate.ui.toUi
 import com.todaylab.cleanarchtemplate.ui.widget.InputCompleteButton
+import com.todaylab.cleanarchtemplate.ui.widget.LuckyDialogButton
 import com.todaylab.cleanarchtemplate.ui.widget.WheelSpinner
+import timber.log.Timber
 
 data class SpinnerState(
     val label: String,
@@ -74,13 +75,14 @@ fun HomeRoute(
 
     val homeStateModel by viewModel.stateModel.collectAsState()
     val homeState = remember(homeStateModel) { homeStateModel.toUi() }
+    Timber.tag("homeStateModel").e("$homeStateModel")
+    Timber.tag("homeState").e("$homeState")
 
     var isPermissionGranted by remember { mutableStateOf(false) }
     val permissionLauncher =
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestPermission(),
             onResult = { isGranted ->
-                Log.e("isGranted 권한", isGranted.toString())
                 if (isGranted) {
                     isPermissionGranted = true
 //                viewModel.fetchWeatherWithCurrentLocation(context)
@@ -346,9 +348,7 @@ fun CenteredButtonDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Button(onClick = onConfirm) {
-                    Text("확인")
-                }
+                LuckyDialogButton(text = "확인", onClick = onConfirm)
             }
         }
     }
