@@ -20,4 +20,12 @@ sealed class DataResource<out T> {
             is Loading -> "Loading[data=$data]"
         }
     }
+
+    fun <K> mapData(transform: (T) -> K): DataResource<K> {
+        return when (this) {
+            is Success -> Success(transform(data))
+            is Error -> Error(throwable)
+            is Loading -> Loading(data?.let { transform(it) })
+        }
+    }
 }

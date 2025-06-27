@@ -79,8 +79,8 @@ data class Snow(
 
 @Serializable
 data class Sys(
-    val type: Int,
-    val id: Int,
+    val type: Int? = null,
+    val id: Int? = null,
     val country: String,
     val sunrise: Long,
     val sunset: Long,

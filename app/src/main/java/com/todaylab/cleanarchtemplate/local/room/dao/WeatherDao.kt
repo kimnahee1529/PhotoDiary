@@ -17,20 +17,19 @@ interface WeatherDao {
     /**
      * get singleton weather entity, if exists
      */
-    @Query(
-        "SELECT * " +
+    @Query("SELECT * " +
                 "FROM ${RoomConstant.TABLE.USER_WEATHER} " +
                 "WHERE id= $WEATHER_ID "
     )
-    fun getWeather(): WeatherLocal?
+    suspend fun getWeather(): WeatherLocal?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun saveWeather(weather: WeatherLocal)
+    suspend fun saveWeather(weather: WeatherLocal)
 
     @Query(
         "DELETE " +
                 "FROM ${RoomConstant.TABLE.USER_WEATHER} " +
                 "WHERE id= $WEATHER_ID "
     )
-    fun deleteWeather()
+    suspend fun deleteWeather()
 }

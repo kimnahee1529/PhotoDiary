@@ -11,4 +11,5 @@ data class WeatherEntity (
     val weatherMain: String,
     val weatherDesc: String,
     val weatherIcon: String,
+    val timestamp: Long,
 )

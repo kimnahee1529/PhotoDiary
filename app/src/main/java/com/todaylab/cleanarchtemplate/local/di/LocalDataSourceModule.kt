@@ -1,8 +1,10 @@
 package com.todaylab.cleanarchtemplate.local.di
 
 import com.todaylab.cleanarchtemplate.data.local.BirthDateLocalDataSource
+import com.todaylab.cleanarchtemplate.data.local.LuckyResultLocalDataSource
 import com.todaylab.cleanarchtemplate.data.local.WeatherLocalDataSource
 import com.todaylab.cleanarchtemplate.local.impl.BirthDateLocalDataSourceImpl
+import com.todaylab.cleanarchtemplate.local.impl.LuckyResultLocalDataSourceImpl
 import com.todaylab.cleanarchtemplate.local.impl.WeatherLocalDataSourceImpl
 import dagger.Binds
 import dagger.Module
@@ -22,4 +24,7 @@ abstract class LocalDataSourceModule {
     @Singleton
     abstract fun bindBirthDateLocalDataSource(impl: BirthDateLocalDataSourceImpl): BirthDateLocalDataSource
 
+    @Binds
+    @Singleton
+    abstract fun bindLuckyResultLocalDataSource(impl: LuckyResultLocalDataSourceImpl): LuckyResultLocalDataSource
 }

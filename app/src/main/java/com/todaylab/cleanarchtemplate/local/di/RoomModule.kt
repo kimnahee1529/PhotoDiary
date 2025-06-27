@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.todaylab.cleanarchtemplate.local.room.AppDatabase
 import com.todaylab.cleanarchtemplate.local.room.RoomConstant
+import com.todaylab.cleanarchtemplate.local.room.dao.LuckyResultDao
 import com.todaylab.cleanarchtemplate.local.room.dao.WeatherDao
 import dagger.Module
 import dagger.Provides
@@ -30,4 +31,8 @@ internal object RoomModule {
     @Provides
     @Singleton
     fun provideWeatherDao(database: AppDatabase): WeatherDao = database.weatherDao()
+
+    @Provides
+    @Singleton
+    fun provideLuckyResultDao(database: AppDatabase): LuckyResultDao = database.luckyDao()
 }
