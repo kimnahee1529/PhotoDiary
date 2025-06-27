@@ -1,5 +1,6 @@
-package com.todaylab.cleanarchtemplate.ui.widget
+package com.todaylab.cleanarchtemplate.ui.home
 
+import android.Manifest
 import android.annotation.SuppressLint
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,14 +20,14 @@ import com.todaylab.cleanarchtemplate.ui.model.WeatherState
 import timber.log.Timber
 
 /**
- * Weather info composable function
+ * Current weather icon composable function
  * @param weather weather state data resource
  * @param shouldRequestLocationPermission request location permission if true
  * @param saveLocation call back to save location after permission granted
  * @param modifier Composable Modifier
  */
 @Composable
-fun WeatherInfo(
+fun CurrentWeatherIcon(
     weather: DataResource<WeatherState> = DataResource.loading(),
     shouldRequestLocationPermission: Boolean = true,
     saveLocation: (lat: Double, lon: Double) -> Unit = { _, _ -> },
@@ -63,7 +64,7 @@ fun WeatherInfo(
      */
     LaunchedEffect(Unit) {
         when (ContextCompat.checkSelfPermission(
-            context, android.Manifest.permission.ACCESS_FINE_LOCATION
+            context, Manifest.permission.ACCESS_FINE_LOCATION
         )) {
             PermissionChecker.PERMISSION_GRANTED -> {
                 Timber.d("granted location permission on launch")
@@ -77,7 +78,7 @@ fun WeatherInfo(
             else -> {
                 Timber.d("no location permission on launch")
                 if (!shouldRequestLocationPermission) return@LaunchedEffect
-                locationPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+                locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             }
         }
     }
