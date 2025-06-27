@@ -30,7 +30,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.todaylab.cleanarchtemplate.R
 import com.todaylab.cleanarchtemplate.core.DataResource
 import com.todaylab.cleanarchtemplate.presentation.home.HomeEvent
@@ -50,7 +49,6 @@ data class SpinnerState(
 
 @Composable
 fun HomeRoute(
-    navController: NavHostController,
     navToResult: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
