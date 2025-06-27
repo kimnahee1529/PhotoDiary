@@ -15,7 +15,7 @@ data class WeatherResponse(
     val rain: Rain? = null,
     val snow: Snow? = null,
     val dt: Long,
-    val sys: Sys,
+    val sys: Sys? = null,
     val timezone: Int,
     val id: Long,
     val name: String,
@@ -79,8 +79,8 @@ data class Snow(
 
 @Serializable
 data class Sys(
-    val type: Int,
-    val id: Int,
+    val type: Int? = null,
+    val id: Int? = null,
     val country: String,
     val sunrise: Long,
     val sunset: Long,
