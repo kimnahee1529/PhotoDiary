@@ -10,7 +10,9 @@ import com.todaylab.cleanarchtemplate.ui.screenB.ScreenB
 
 fun NavGraphBuilder.mainNavGraph(navController: NavHostController) {
     composable(AppRoute.Main.route) {
-        HomeRoute(navController)
+        HomeRoute(
+            navController = navController,
+            navToResult = { navController.navigate(AppRoute.LuckyResult.route) })
     }
     composable(AppRoute.LuckyResult.route) {
         ResultRoute(navController)
