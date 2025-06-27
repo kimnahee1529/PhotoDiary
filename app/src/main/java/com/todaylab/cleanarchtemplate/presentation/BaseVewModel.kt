@@ -3,7 +3,7 @@ package com.todaylab.cleanarchtemplate.presentation
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.todaylab.cleanarchtemplate.remote.CustomException
+import com.todaylab.cleanarchtemplate.core.CustomException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
