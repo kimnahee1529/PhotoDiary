@@ -12,10 +12,8 @@ import javax.inject.Inject
 class LuckyResultLocalDataSourceImpl @Inject constructor(
     private val luckyDao: LuckyResultDao
 ): LuckyResultLocalDataSource {
-    override suspend fun getLuckyResult(id: String): DataResource<LuckyResultEntity>? {
-
-        val luckyResult = luckyDao.getLuckyResult(id) ?: return null
-
+    override suspend fun getLuckyResult(id: String): DataResource<LuckyResultEntity> {
+        val luckyResult = luckyDao.getLuckyResult(id) ?: return DataResource.empty()
         return DataResource.success(luckyResult.toData())
     }
 

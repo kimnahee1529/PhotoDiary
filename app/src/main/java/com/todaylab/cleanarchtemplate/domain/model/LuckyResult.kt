@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
 /**
- * domain LuckyResult model
+ * domain lucky Result model
  */
 data class LuckyResult(
     val id: String,

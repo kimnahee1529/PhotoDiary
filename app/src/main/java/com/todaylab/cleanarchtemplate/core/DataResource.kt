@@ -29,6 +29,15 @@ sealed class DataResource<out T> {
         }
     }
 
+    fun <K> mapData(transform: (T) -> K): DataResource<K> {
+        return when (this) {
+            is Success -> Success(transform(data))
+            is Empty -> Empty
+            is Error -> Error(throwable)
+            is Loading -> Loading(data?.let { transform(it) })
+        }
+    }
+
     // override toString() for debug purpose
     override fun toString(): String {
         return when (this) {
@@ -36,14 +45,6 @@ sealed class DataResource<out T> {
             is Empty -> "Empty"
             is Loading -> "Loading[data=$data]"
             is Error -> "Error[throwable=$throwable]"
-        }
-    }
-
-    fun <K> mapData(transform: (T) -> K): DataResource<K> {
-        return when (this) {
-            is Success -> Success(transform(data))
-            is Error -> Error(throwable)
-            is Loading -> Loading(data?.let { transform(it) })
         }
     }
 }
