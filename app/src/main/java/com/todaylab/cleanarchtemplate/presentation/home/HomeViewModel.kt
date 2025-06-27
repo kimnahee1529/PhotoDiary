@@ -17,10 +17,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -39,52 +39,47 @@ interface HomeEvent {
 
 @HiltViewModel
 class HomeViewModel
-@Inject
-constructor(
+@Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getWeatherUseCase: GetWeatherUseCase,
     private val getBirthDateUseCase: GetBirthDateUseCase,
     private val saveBirthDateUseCase: SaveBirthDateUseCase,
-) : BaseViewModel(savedStateHandle),
-    HomeEvent {
+) : BaseViewModel(savedStateHandle), HomeEvent {
 
     private val _lat = MutableStateFlow<Double?>(null)
     private val _lon = MutableStateFlow<Double?>(null)
     private val _weather = MutableStateFlow<DataResource<WeatherModel>>(DataResource.loading())
-    private val _birthDate =
-        MutableStateFlow<DataResource<BirthDateModel>>(DataResource.loading())
+    private val _birthDate = MutableStateFlow<DataResource<BirthDateModel>>(DataResource.loading())
     private val _stateModel = MutableStateFlow<HomeStateModel>(HomeStateModel())
 
     val stateModel: StateFlow<HomeStateModel> = _stateModel.asStateFlow()
     val event: HomeEvent = this@HomeViewModel
 
     init {
+        // collect custom exception
         viewModelScopeEH.launch {
             customException.collect {
                 Timber.e(it.message)
             }
         }
 
-        viewModelScopeEH.launch(Dispatchers.IO) {
-            // load saved birth date on init
-            loadBirthDate()
-        }
+        // load saved birth date on init
+        loadBirthDate()
 
+        // load weather when current location is updated
         viewModelScopeEH.launch {
-            // load weather when current location is updated
             combine(_lat, _lon) { lat, lon ->
-                if (lat != null && lon != null) {
-                    Timber.d("location updated - $lat, $lon")
-                    withContext(Dispatchers.IO) {
-                        loadWeather(lat, lon)
-                    }
-                }
+                lat to lon
+            }.collectLatest { (lat, lon) ->
+                loadWeather()
             }
         }
 
+        // update home state model
         viewModelScopeEH.launch {
-            // update home state model
             combine(_weather, _birthDate) { weather, birthDate ->
+                weather to birthDate
+            }.collectLatest { (weather, birthDate) ->
                 _stateModel.update {
                     it.copy(
                         weather = weather,
@@ -95,48 +90,51 @@ constructor(
         }
     }
 
-    private suspend fun loadWeather(
-        lat: Double,
-        lon: Double,
+    private fun loadWeather(
     ) {
-        /// 1. set weather to loading state
-        _weather.update {
-            DataResource.loading(
-                when (it) {
-                    is DataResource.Success -> (it.data)
-                    is DataResource.Loading -> (it.data)
-                    is DataResource.Error -> null
+        viewModelScopeEH.launch(Dispatchers.IO) {
+            /// 1. set weather to loading state
+            _weather.update {
+                DataResource.loading(
+                    when (it) {
+                        is DataResource.Success -> (it.data)
+                        is DataResource.Loading -> (it.data)
+                        is DataResource.Error -> null
+                    }
+                )
+            }
+            //  2. update weather state
+            _weather.update {
+                if (_lat.value == null || _lon.value == null) DataResource.error(Throwable("location is null"))
+                else when (val newWeather = getWeatherUseCase(_lat.value!!, _lon.value!!)) {
+                    is DataResource.Success -> DataResource.success(newWeather.data.toPresentation())
+                    is DataResource.Loading -> DataResource.loading(newWeather.data?.toPresentation())
+                    is DataResource.Error -> DataResource.error(newWeather.throwable)
                 }
-            )
-        }
-        //  2. update weather state
-        _weather.update {
-            when (val newWeather = getWeatherUseCase(lat, lon)) {
-                is DataResource.Success -> DataResource.success(newWeather.data.toPresentation())
-                is DataResource.Loading -> DataResource.loading(newWeather.data?.toPresentation())
-                is DataResource.Error -> DataResource.error(newWeather.throwable)
             }
         }
     }
 
-    private suspend fun loadBirthDate() {
-        /// 1. set birth date to loading state
-        _birthDate.update {
-            DataResource.loading(
-                when (it) {
-                    is DataResource.Success -> (it.data)
-                    is DataResource.Loading -> (it.data)
-                    is DataResource.Error -> null
+    private fun loadBirthDate() {
+        viewModelScopeEH.launch(Dispatchers.IO) {
+            /// 1. set birth date to loading state
+            _birthDate.update {
+                DataResource.loading(
+                    when (it) {
+                        is DataResource.Success -> (it.data)
+                        is DataResource.Loading -> (it.data)
+                        is DataResource.Error -> null
+                    }
+                )
+            }
+            // 2. update birth date state
+            _birthDate.update {
+                when (val savedBirthDate = getBirthDateUseCase()) {
+                    is DataResource.Success -> DataResource.success(savedBirthDate.data.toPresentation())
+                    is DataResource.Loading -> DataResource.loading(savedBirthDate.data?.toPresentation())
+                    is DataResource.Error -> DataResource.error(savedBirthDate.throwable)
+                    else -> DataResource.error(Throwable("presentation layer error - Unknown error"))
                 }
-            )
-        }
-        // 2. update birth date state
-        _birthDate.update {
-            when (val savedBirthDate = getBirthDateUseCase()) {
-                is DataResource.Success -> DataResource.success(savedBirthDate.data.toPresentation())
-                is DataResource.Loading -> DataResource.loading(savedBirthDate.data?.toPresentation())
-                is DataResource.Error -> DataResource.error(savedBirthDate.throwable)
-                else -> DataResource.error(Throwable("presentation layer error - Unknown error"))
             }
         }
     }
@@ -145,6 +143,7 @@ constructor(
         lat: Double,
         lon: Double,
     ) {
+        Timber.d("save location - $lat, $lon")
         _lat.update { lat }
         _lon.update { lon }
     }
