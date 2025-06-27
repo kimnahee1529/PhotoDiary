@@ -8,16 +8,31 @@ import com.todaylab.cleanarchtemplate.domain.model.Weather
 import com.todaylab.cleanarchtemplate.domain.repository.WeatherRepository
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.hours
+
+/**
+ * local weather data should be expired after 3 hours
+ */
+const val WEATHER_EXPIRATION_HOUR = 3
 
 class WeatherRepositoryImpl @Inject constructor(
     private val weatherRemoteDataSource: WeatherRemoteDataSource,
     private val weatherLocalDataSource: WeatherLocalDataSource
 ) : WeatherRepository {
     override suspend fun getWeather(lat: Double, lon: Double): DataResource<Weather> {
-        val localWeather = weatherLocalDataSource.getFreshWeather(lat, lon)
+        val localWeather = weatherLocalDataSource.getWeather(lat, lon)
         Timber.d("weather repo impl - local weather: ${localWeather}")
         if (localWeather is DataResource.Success) {
-            return DataResource.success(localWeather.data.toDomain())
+            val expirationTime =
+                System.currentTimeMillis() - WEATHER_EXPIRATION_HOUR.hours.inWholeMilliseconds
+
+            return if (localWeather.data.date.time >= expirationTime) {
+                Timber.d("local weather has not expired")
+                DataResource.success(localWeather.data.toDomain())
+            } else {
+                Timber.d("local weather has expired")
+                DataResource.empty()
+            }
         }
 
         val remoteWeather = weatherRemoteDataSource.getWeather(lat, lon)
