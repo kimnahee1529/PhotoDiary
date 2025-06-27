@@ -1,13 +1,21 @@
 package com.todaylab.cleanarchtemplate.core
 
-// todo: wrap data classes in sealed class
+/**
+ * Data resource class for handling data state
+ * - Success: success
+ * - Empty: success, but empty data
+ * - Loading: loading with optional data
+ * - Error: error with throwable
+ */
 sealed class DataResource<out T> {
     class Success<T>(val data: T) : DataResource<T>()
-    class Error(val throwable: Throwable) : DataResource<Nothing>()
+    object Empty : DataResource<Nothing>()
     class Loading<T>(val data: T? = null) : DataResource<T>()
+    class Error(val throwable: Throwable) : DataResource<Nothing>()
 
     companion object {
         fun <T> success(data: T) = Success(data)
+        fun empty() = Empty
         fun error(throwable: Throwable) = Error(throwable)
         fun <T> loading(data: T? = null) = Loading(data)
     }
@@ -15,8 +23,9 @@ sealed class DataResource<out T> {
     fun getDataOrNull(): T? {
         return when (this) {
             is Success -> data
-            is Error -> null
             is Loading -> data
+            is Empty -> null
+            is Error -> null
         }
     }
 
@@ -24,8 +33,9 @@ sealed class DataResource<out T> {
     override fun toString(): String {
         return when (this) {
             is Success -> "Success[data=$data]"
-            is Error -> "Error[throwable=$throwable]"
+            is Empty -> "Empty"
             is Loading -> "Loading[data=$data]"
+            is Error -> "Error[throwable=$throwable]"
         }
     }
 }
