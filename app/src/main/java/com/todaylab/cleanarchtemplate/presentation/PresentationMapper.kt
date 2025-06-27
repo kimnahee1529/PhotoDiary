@@ -19,3 +19,10 @@ internal fun BirthDate.toPresentation() = BirthDateModel(
     month = month,
     day = day,
 )
+
+
+internal fun BirthDateModel.toDomain() = BirthDate(
+    year = year,
+    month = month,
+    day = day,
+)

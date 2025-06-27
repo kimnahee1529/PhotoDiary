@@ -1,6 +1,7 @@
 package com.todaylab.cleanarchtemplate.presentation.home
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.todaylab.cleanarchtemplate.core.DataResource
 import com.todaylab.cleanarchtemplate.domain.usecase.GetBirthDateUseCase
 import com.todaylab.cleanarchtemplate.domain.usecase.GetWeatherUseCase
@@ -9,6 +10,7 @@ import com.todaylab.cleanarchtemplate.presentation.BaseViewModel
 import com.todaylab.cleanarchtemplate.presentation.model.BirthDateModel
 import com.todaylab.cleanarchtemplate.presentation.model.HomeStateModel
 import com.todaylab.cleanarchtemplate.presentation.model.WeatherModel
+import com.todaylab.cleanarchtemplate.presentation.toDomain
 import com.todaylab.cleanarchtemplate.presentation.toPresentation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -27,13 +30,11 @@ interface HomeEvent {
         lon: Double,
     )
 
-    fun setBirthDateYear(year: String)
-
-    fun setBirthDateMonth(month: String)
-
-    fun setBirthDateDay(day: String)
-
-    fun saveBirthDate()
+    fun saveBirthDate(
+        year: String,
+        month: String,
+        day: String,
+    )
 }
 
 @HiltViewModel
@@ -52,9 +53,10 @@ constructor(
     private val _weather = MutableStateFlow<DataResource<WeatherModel>>(DataResource.loading())
     private val _birthDate =
         MutableStateFlow<DataResource<BirthDateModel>>(DataResource.loading())
-
     private val _stateModel = MutableStateFlow<HomeStateModel>(HomeStateModel())
+
     val stateModel: StateFlow<HomeStateModel> = _stateModel.asStateFlow()
+    val event: HomeEvent = this@HomeViewModel
 
     init {
         viewModelScopeEH.launch {
@@ -69,16 +71,13 @@ constructor(
         }
 
         viewModelScopeEH.launch {
-            // todo: get current location from gps
-            _lat.update { 37.5 }
-            _lon.update { 127.0 }
-        }
-
-        viewModelScopeEH.launch(Dispatchers.IO) {
-            // load weather when current location is set
+            // load weather when current location is updated
             combine(_lat, _lon) { lat, lon ->
                 if (lat != null && lon != null) {
-                    loadWeather(lat, lon)
+                    Timber.d("location updated - $lat, $lon")
+                    withContext(Dispatchers.IO) {
+                        loadWeather(lat, lon)
+                    }
                 }
             }
         }
@@ -140,34 +139,30 @@ constructor(
                 else -> DataResource.error(Throwable("presentation layer error - Unknown error"))
             }
         }
-
     }
 
     override fun saveLocation(
         lat: Double,
         lon: Double,
     ) {
-        TODO("Not yet implemented")
+        _lat.update { lat }
+        _lon.update { lon }
     }
 
-    override fun setBirthDateYear(year: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun setBirthDateMonth(month: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun setBirthDateDay(day: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun saveBirthDate() {
-        TODO("Not yet implemented")
-//        viewModelScope.launch {
-//            saveBirthDateUseCase(
-//                _birthDateState.value // todo: map to domain
-//            )
-//        }
+    override fun saveBirthDate(
+        year: String,
+        month: String,
+        day: String,
+    ) {
+        // 1. update birth date state
+        _birthDate.update {
+            DataResource.success(BirthDateModel(year, month, day))
+        }
+        // 2. save birth date
+        viewModelScope.launch(Dispatchers.IO) {
+            saveBirthDateUseCase(
+                BirthDateModel(year, month, day).toDomain()
+            )
+        }
     }
 }
