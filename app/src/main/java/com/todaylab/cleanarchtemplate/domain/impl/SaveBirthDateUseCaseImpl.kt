@@ -9,6 +9,6 @@ class SaveBirthDateUseCaseImpl @Inject constructor(
     private val birthDateRepository: BirthDateRepository,
 ): SaveBirthDateUseCase {
     override suspend operator fun invoke(birthDate: BirthDate) {
-        birthDateRepository.saveBirthDate(birthDate)
+        birthDateRepository.save(birthDate)
     }
 }

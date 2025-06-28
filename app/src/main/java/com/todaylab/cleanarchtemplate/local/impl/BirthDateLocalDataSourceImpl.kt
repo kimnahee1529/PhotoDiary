@@ -9,21 +9,14 @@ import com.todaylab.cleanarchtemplate.local.datastore.BirthDateKeys
 import com.todaylab.cleanarchtemplate.local.datastore.birthDateDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
+import timber.log.Timber
 import javax.inject.Inject
 
 
 class BirthDateLocalDataSourceImpl @Inject constructor(
     @ApplicationContext private val context: Context
-): BirthDateLocalDataSource {
-    override suspend fun saveBirthDate(birthDate: BirthDateEntity) {
-        context.birthDateDataStore.edit { prefs ->
-            prefs[BirthDateKeys.YEAR] = birthDate.year
-            prefs[BirthDateKeys.MONTH] = birthDate.month
-            prefs[BirthDateKeys.DAY] = birthDate.day
-        }
-    }
-
-    override suspend fun getBirthDate(): DataResource<BirthDateEntity> {
+) : BirthDateLocalDataSource {
+    override suspend fun get(): DataResource<BirthDateEntity> {
         try {
             val prefs = context.birthDateDataStore.data.first()
             val y = prefs[BirthDateKeys.YEAR]
@@ -36,4 +29,29 @@ class BirthDateLocalDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun save(item: BirthDateEntity): Boolean {
+        try {
+            context.birthDateDataStore.edit { prefs ->
+                prefs[BirthDateKeys.YEAR] = item.year
+                prefs[BirthDateKeys.MONTH] = item.month
+                prefs[BirthDateKeys.DAY] = item.day
+            }
+            return true
+        } catch (e: Exception) {
+            Timber.e("local layer error - ${e.message}")
+            return false
+        }
+    }
+
+    override suspend fun delete(): Boolean {
+        try {
+            context.birthDateDataStore.edit {
+                it.clear()
+            }
+            return true
+        } catch (e: Exception) {
+            Timber.e("local layer error - ${e.message}")
+            return false
+        }
+    }
 }
