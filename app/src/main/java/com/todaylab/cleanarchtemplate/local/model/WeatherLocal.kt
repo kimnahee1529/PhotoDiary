@@ -21,5 +21,4 @@ data class WeatherLocal(
     val lon: Double,
     val description: String,
     val icon: String,
-    val timestamp: Long,
 )

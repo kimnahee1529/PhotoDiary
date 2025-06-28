@@ -27,12 +27,9 @@ internal object WeatherMapper : BaseModelMapper<Weather, WeatherEntity> {
             date = high.date,
             lat = high.lat,
             lon = high.lon,
-            cityName = "",
-            temp = 0.0,
             weatherMain = high.main,
             weatherDesc = high.description,
             weatherIcon = high.icon,
-            timestamp = System.currentTimeMillis()
         )
     }
 }
