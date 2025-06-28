@@ -2,9 +2,8 @@ package com.todaylab.cleanarchtemplate.data.impl
 
 import com.todaylab.cleanarchtemplate.core.DataResource
 import com.todaylab.cleanarchtemplate.data.local.WeatherLocalDataSource
+import com.todaylab.cleanarchtemplate.data.mapper.WeatherMapper
 import com.todaylab.cleanarchtemplate.data.remote.WeatherRemoteDataSource
-import com.todaylab.cleanarchtemplate.data.toData
-import com.todaylab.cleanarchtemplate.data.toDomain
 import com.todaylab.cleanarchtemplate.domain.model.Weather
 import com.todaylab.cleanarchtemplate.domain.repository.WeatherRepository
 import timber.log.Timber
@@ -27,7 +26,7 @@ class WeatherRepositoryImpl @Inject constructor(
         try {
             val localWeather = weatherLocalDataSource.get()
             Timber.d("weather repo impl - local weather: ${localWeather}")
-            return localWeather.mapData { it.toDomain() }
+            return localWeather.mapData(WeatherMapper::mapToHigh)
         } catch (e: Exception) {
             return DataResource.error(Throwable("data layer error - ${e.message}"))
         }
@@ -46,7 +45,7 @@ class WeatherRepositoryImpl @Inject constructor(
 
             return if (localWeather.data.date.time >= expirationTime) {
                 Timber.d("local weather has not expired")
-                DataResource.success(localWeather.data.toDomain())
+                DataResource.success(WeatherMapper.mapToHigh(localWeather.data))
             } else {
                 Timber.d("local weather has expired")
                 DataResource.empty()
@@ -55,12 +54,12 @@ class WeatherRepositoryImpl @Inject constructor(
 
         val remoteWeather = weatherRemoteDataSource.getWeather(lat, lon)
         Timber.d("weather repo impl - remote weather: ${remoteWeather}")
-        return remoteWeather.mapData { it.toDomain() }
+        return remoteWeather.mapData(WeatherMapper::mapToHigh)
     }
 
     override suspend fun save(item: Weather): Boolean {
         return try {
-            weatherLocalDataSource.save(item.toData())
+            weatherLocalDataSource.save(WeatherMapper.mapToLow(item))
         } catch (e: Exception) {
             Timber.e("data layer error - ${e.message}")
             false

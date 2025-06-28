@@ -2,6 +2,7 @@ package com.todaylab.cleanarchtemplate.data.model
 
 import java.util.Date
 
+// todo: remove unused properties
 data class WeatherEntity (
     val date: Date,
     val lat: Double,
