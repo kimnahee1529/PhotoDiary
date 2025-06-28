@@ -10,6 +10,6 @@ class GetWeatherUseCaseImpl @Inject constructor(
     private val weatherRepository: WeatherRepository,
 ): GetWeatherUseCase {
     override suspend operator fun invoke(lat: Double, lon: Double): DataResource<Weather> {
-        return weatherRepository.getWeather(lat, lon)
+        return weatherRepository.getByLocation(lat, lon)
     }
 }

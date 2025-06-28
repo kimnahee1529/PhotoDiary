@@ -3,6 +3,7 @@ package com.todaylab.cleanarchtemplate.data.impl
 import com.todaylab.cleanarchtemplate.core.DataResource
 import com.todaylab.cleanarchtemplate.data.local.WeatherLocalDataSource
 import com.todaylab.cleanarchtemplate.data.remote.WeatherRemoteDataSource
+import com.todaylab.cleanarchtemplate.data.toData
 import com.todaylab.cleanarchtemplate.data.toDomain
 import com.todaylab.cleanarchtemplate.domain.model.Weather
 import com.todaylab.cleanarchtemplate.domain.repository.WeatherRepository
@@ -19,8 +20,25 @@ class WeatherRepositoryImpl @Inject constructor(
     private val weatherRemoteDataSource: WeatherRemoteDataSource,
     private val weatherLocalDataSource: WeatherLocalDataSource
 ) : WeatherRepository {
-    override suspend fun getWeather(lat: Double, lon: Double): DataResource<Weather> {
-        val localWeather = weatherLocalDataSource.getWeather(lat, lon)
+    /**
+     * Get singleton weather entity from local
+     */
+    override suspend fun get(): DataResource<Weather> {
+        try {
+            val localWeather = weatherLocalDataSource.get()
+            Timber.d("weather repo impl - local weather: ${localWeather}")
+            return localWeather.mapData { it.toDomain() }
+        } catch (e: Exception) {
+            return DataResource.error(Throwable("data layer error - ${e.message}"))
+        }
+    }
+
+    /**
+     * Get singleton weather entity that matches location
+     * If not exists or expired, fetch from remote and save to local
+     */
+    override suspend fun getByLocation(lat: Double, lon: Double): DataResource<Weather> {
+        val localWeather = weatherLocalDataSource.getByLocation(lat, lon)
         Timber.d("weather repo impl - local weather: ${localWeather}")
         if (localWeather is DataResource.Success) {
             val expirationTime =
@@ -38,5 +56,23 @@ class WeatherRepositoryImpl @Inject constructor(
         val remoteWeather = weatherRemoteDataSource.getWeather(lat, lon)
         Timber.d("weather repo impl - remote weather: ${remoteWeather}")
         return remoteWeather.mapData { it.toDomain() }
+    }
+
+    override suspend fun save(item: Weather): Boolean {
+        return try {
+            weatherLocalDataSource.save(item.toData())
+        } catch (e: Exception) {
+            Timber.e("data layer error - ${e.message}")
+            false
+        }
+    }
+
+    override suspend fun delete(): Boolean {
+        return try {
+            weatherLocalDataSource.delete()
+        } catch (e: Exception) {
+            Timber.e("data layer error - ${e.message}")
+            false
+        }
     }
 }

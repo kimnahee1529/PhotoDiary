@@ -15,22 +15,26 @@ import com.todaylab.cleanarchtemplate.local.room.RoomConstant
 @Dao
 interface WeatherDao {
     /**
+     * get singleton weather entity
+     */
+    @Query(
+        "SELECT * FROM ${RoomConstant.TABLE.USER_WEATHER} WHERE id= $WEATHER_ID"
+    )
+    suspend fun get(): WeatherLocal?
+
+    /**
      * get singleton weather entity, where location matches
      */
     @Query(
-        "SELECT * " +
-                "FROM ${RoomConstant.TABLE.USER_WEATHER} " +
-                "WHERE id= $WEATHER_ID AND lat = :lat AND lon = :lon "
+        "SELECT * FROM ${RoomConstant.TABLE.USER_WEATHER} WHERE id= $WEATHER_ID AND lat = :lat AND lon = :lon"
     )
-    suspend fun getWeather(lat: Double, lon: Double): WeatherLocal?
+    suspend fun getByLocation(lat: Double, lon: Double): WeatherLocal?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun saveWeather(weather: WeatherLocal)
+    suspend fun save(item: WeatherLocal)
 
     @Query(
-        "DELETE " +
-                "FROM ${RoomConstant.TABLE.USER_WEATHER} " +
-                "WHERE id= $WEATHER_ID "
+        "DELETE FROM ${RoomConstant.TABLE.USER_WEATHER} WHERE id= $WEATHER_ID "
     )
-    suspend fun deleteWeather()
+    suspend fun delete()
 }
