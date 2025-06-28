@@ -6,7 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.todaylab.cleanarchtemplate.core.DataResource
 import com.todaylab.cleanarchtemplate.core.toYyyyMMdd
-import com.todaylab.cleanarchtemplate.domain.usecase.GetLuckyResultUseCase
+import com.todaylab.cleanarchtemplate.domain.usecase.GetLuckyResultByIdUseCase
 import com.todaylab.cleanarchtemplate.presentation.BaseViewModel
 import com.todaylab.cleanarchtemplate.presentation.mapper.LuckyResultMapper
 import com.todaylab.cleanarchtemplate.presentation.model.LuckyResultModel
@@ -27,8 +27,9 @@ interface ResultEvent {
 @HiltViewModel
 class ResultViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val getLuckyResultUseCase: GetLuckyResultUseCase,
+    private val getLuckyResultById: GetLuckyResultByIdUseCase,
 ) : BaseViewModel<DataResource<LuckyResultModel>>(savedStateHandle), ResultEvent {
+
     private val _luckyResult: MutableStateFlow<DataResource<LuckyResultModel>> =
         MutableStateFlow(DataResource.loading())
     override val screenModel = _luckyResult.asStateFlow()
@@ -43,7 +44,7 @@ class ResultViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             _luckyResult.update {
-                getLuckyResultUseCase(id).mapData(LuckyResultMapper::mapToLow)
+                getLuckyResultById(id).mapData(LuckyResultMapper::mapToLow)
             }
         }
     }

@@ -3,12 +3,12 @@ package com.todaylab.cleanarchtemplate.domain.impl
 import com.todaylab.cleanarchtemplate.core.DataResource
 import com.todaylab.cleanarchtemplate.domain.model.LuckyResult
 import com.todaylab.cleanarchtemplate.domain.repository.LuckyResultRepository
-import com.todaylab.cleanarchtemplate.domain.usecase.GetLuckyResultUseCase
+import com.todaylab.cleanarchtemplate.domain.usecase.GetLuckyResultByIdUseCase
 import javax.inject.Inject
 
-class GetLuckyResultUseCaseImpl @Inject constructor(
+class GetLuckyResultByIdUseCaseImpl @Inject constructor(
     private val luckyResultRepository: LuckyResultRepository,
-) : GetLuckyResultUseCase {
+) : GetLuckyResultByIdUseCase {
 
     override suspend fun invoke(id: String): DataResource<LuckyResult> {
         return luckyResultRepository.getById(id)
