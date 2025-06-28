@@ -1,6 +1,5 @@
 package com.todaylab.cleanarchtemplate.domain.repository
 
-import com.todaylab.cleanarchtemplate.domain.BaseCRUDRepository
 import com.todaylab.cleanarchtemplate.domain.model.LuckyResult
 
 /**

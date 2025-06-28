@@ -1,4 +1,4 @@
-package com.todaylab.cleanarchtemplate.domain
+package com.todaylab.cleanarchtemplate.domain.repository
 
 import com.todaylab.cleanarchtemplate.core.DataResource
 
