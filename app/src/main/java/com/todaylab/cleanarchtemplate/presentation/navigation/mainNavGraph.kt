@@ -1,5 +1,7 @@
 package com.todaylab.cleanarchtemplate.presentation.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -8,6 +10,7 @@ import com.todaylab.cleanarchtemplate.ui.home.HomeRoute
 import com.todaylab.cleanarchtemplate.ui.result.ResultRoute
 import com.todaylab.cleanarchtemplate.ui.screenB.ScreenB
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun NavGraphBuilder.mainNavGraph(navController: NavHostController) {
     composable(AppRoute.Main.route) {
         HomeRoute(
@@ -15,7 +18,7 @@ fun NavGraphBuilder.mainNavGraph(navController: NavHostController) {
         )
     }
     composable(AppRoute.LuckyResult.route) {
-        ResultRoute(navController)
+        ResultRoute()
     }
     composable(AppRoute.ScreenB.route) {
         ScreenB(navController)

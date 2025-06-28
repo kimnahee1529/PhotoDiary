@@ -8,7 +8,7 @@ import com.todaylab.cleanarchtemplate.domain.usecase.GetWeatherUseCase
 import com.todaylab.cleanarchtemplate.domain.usecase.SaveBirthDateUseCase
 import com.todaylab.cleanarchtemplate.presentation.BaseViewModel
 import com.todaylab.cleanarchtemplate.presentation.model.BirthDateModel
-import com.todaylab.cleanarchtemplate.presentation.model.HomeStateModel
+import com.todaylab.cleanarchtemplate.presentation.model.HomeScreenModel
 import com.todaylab.cleanarchtemplate.presentation.model.WeatherModel
 import com.todaylab.cleanarchtemplate.presentation.toDomain
 import com.todaylab.cleanarchtemplate.presentation.toPresentation
@@ -45,7 +45,7 @@ class HomeViewModel
     private val getWeatherUseCase: GetWeatherUseCase,
     private val getBirthDateUseCase: GetBirthDateUseCase,
     private val saveBirthDateUseCase: SaveBirthDateUseCase,
-) : BaseViewModel(savedStateHandle), HomeEvent {
+) : BaseViewModel<HomeScreenModel>(savedStateHandle), HomeEvent {
 
     private val _lat = MutableStateFlow<Double?>(null)
     private val _lon = MutableStateFlow<Double?>(null)
@@ -53,15 +53,15 @@ class HomeViewModel
     private val _birthDate = MutableStateFlow<DataResource<BirthDateModel>>(DataResource.loading())
 
     // Directly combine flows to create the stateModel
-    val stateModel: StateFlow<HomeStateModel> = combine(
+    override val screenModel: StateFlow<HomeScreenModel> = combine(
         _weather,
         _birthDate
     ) { weather, birthDate ->
-        HomeStateModel(weather = weather, birthDate = birthDate)
+        HomeScreenModel(weather = weather, birthDate = birthDate)
     }.stateIn( // Use stateIn to convert the combined flow to a StateFlow
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = HomeStateModel()
+        initialValue = HomeScreenModel()
     )
 
     val event: HomeEvent = this@HomeViewModel

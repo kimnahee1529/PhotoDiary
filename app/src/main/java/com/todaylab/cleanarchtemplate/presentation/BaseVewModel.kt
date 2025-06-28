@@ -6,15 +6,18 @@ import androidx.lifecycle.viewModelScope
 import com.todaylab.cleanarchtemplate.core.CustomException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 
-abstract class BaseViewModel(
+abstract class BaseViewModel<ScreenModel>(
     val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    private val _customExceptions: MutableSharedFlow<CustomException> = MutableSharedFlow()
-    protected val customException = _customExceptions.asSharedFlow()
+    abstract val screenModel: StateFlow<ScreenModel>
+
+    private val _customException = MutableSharedFlow<CustomException>()
+    protected val customException = _customException.asSharedFlow()
 
     private val exceptionHandler =
         CoroutineExceptionHandler { _, throwable ->
@@ -28,11 +31,10 @@ abstract class BaseViewModel(
                             message = throwable.message ?: "",
                         )
                     }.let { customException ->
-                        _customExceptions.emit(customException)
+                        _customException.emit(customException)
                     }
                 }
             }
         }
-
     protected val viewModelScopeEH = viewModelScope + exceptionHandler
 }

@@ -8,8 +8,8 @@ import com.todaylab.cleanarchtemplate.core.DataResource
 import com.todaylab.cleanarchtemplate.core.toYyyyMMdd
 import com.todaylab.cleanarchtemplate.domain.usecase.GetLuckyResultUseCase
 import com.todaylab.cleanarchtemplate.presentation.BaseViewModel
+import com.todaylab.cleanarchtemplate.presentation.mapper.LuckyResultMapper
 import com.todaylab.cleanarchtemplate.presentation.model.LuckyResultModel
-import com.todaylab.cleanarchtemplate.presentation.toPresentation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,10 +28,10 @@ interface ResultEvent {
 class ResultViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getLuckyResultUseCase: GetLuckyResultUseCase,
-) : BaseViewModel(savedStateHandle), ResultEvent {
-    private val _resultModel =
-        MutableStateFlow<DataResource<LuckyResultModel>>(DataResource.loading())
-    val resultModel = _resultModel.asStateFlow()
+) : BaseViewModel<DataResource<LuckyResultModel>>(savedStateHandle), ResultEvent {
+    private val _luckyResult: MutableStateFlow<DataResource<LuckyResultModel>> =
+        MutableStateFlow(DataResource.loading())
+    override val screenModel = _luckyResult.asStateFlow()
 
     init {
         getLuckyResult()
@@ -39,12 +39,11 @@ class ResultViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun getLuckyResult() {
-        val resultId = LocalDate.now().toYyyyMMdd()
+        val id = LocalDate.now().toYyyyMMdd()
 
         viewModelScope.launch(Dispatchers.IO) {
-            val luckyResult = getLuckyResultUseCase(resultId)
-            _resultModel.update {
-                luckyResult.mapData { it.toPresentation() }
+            _luckyResult.update {
+                getLuckyResultUseCase(id).mapData(LuckyResultMapper::mapToLow)
             }
         }
     }

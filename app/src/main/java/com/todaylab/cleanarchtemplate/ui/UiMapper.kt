@@ -1,12 +1,10 @@
 package com.todaylab.cleanarchtemplate.ui
 
 import com.todaylab.cleanarchtemplate.presentation.model.BirthDateModel
-import com.todaylab.cleanarchtemplate.presentation.model.HomeStateModel
-import com.todaylab.cleanarchtemplate.presentation.model.LuckyResultModel
+import com.todaylab.cleanarchtemplate.presentation.model.HomeScreenModel
 import com.todaylab.cleanarchtemplate.presentation.model.WeatherModel
 import com.todaylab.cleanarchtemplate.ui.model.BirthDateState
-import com.todaylab.cleanarchtemplate.ui.model.HomeState
-import com.todaylab.cleanarchtemplate.ui.model.LuckyResultState
+import com.todaylab.cleanarchtemplate.ui.model.HomeScreenState
 import com.todaylab.cleanarchtemplate.ui.model.WeatherState
 
 internal fun WeatherModel.toUi() = WeatherState(
@@ -24,16 +22,7 @@ internal fun BirthDateModel.toUi() = BirthDateState(
     day = day,
 )
 
-internal fun HomeStateModel.toUi() = HomeState(
+internal fun HomeScreenModel.toUi() = HomeScreenState(
     weather = weather.mapData { it.toUi() },
     birthDate = birthDate.mapData { it.toUi() },
-)
-
-internal fun LuckyResultModel.toUi() = LuckyResultState(
-    id = id,
-    date = date,
-    animal = animal,
-    numbers = numbers,
-    initials = initials,
-    color = color
 )
