@@ -43,14 +43,17 @@ object WeatherRetrofitModule {
                 .addInterceptor(ApiKeyInterceptor("appid", APP_KEY))
                 .build()
 
+        val json = Json {
+            ignoreUnknownKeys
+        }
+
         return Retrofit
             .Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(
-                Json {
-                    ignoreUnknownKeys = true
-                }.asConverterFactory("application/json".toMediaType()),
-            ).client(httpClient)
+                json.asConverterFactory("application/json".toMediaType()),
+            )
+            .client(httpClient)
             .build()
     }
 }
