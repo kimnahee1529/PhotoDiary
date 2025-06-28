@@ -4,9 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.todaylab.cleanarchtemplate.core.DataResource
 import com.todaylab.cleanarchtemplate.domain.usecase.GetBirthDateUseCase
-import com.todaylab.cleanarchtemplate.domain.usecase.GetWeatherUseCase
+import com.todaylab.cleanarchtemplate.domain.usecase.GetWeatherByLocationUseCase
 import com.todaylab.cleanarchtemplate.domain.usecase.SaveBirthDateUseCase
 import com.todaylab.cleanarchtemplate.presentation.BaseViewModel
+import com.todaylab.cleanarchtemplate.presentation.mapper.WeatherMapper
 import com.todaylab.cleanarchtemplate.presentation.model.BirthDateModel
 import com.todaylab.cleanarchtemplate.presentation.model.HomeScreenModel
 import com.todaylab.cleanarchtemplate.presentation.model.WeatherModel
@@ -31,7 +32,7 @@ interface HomeEvent {
         lon: Double,
     )
 
-    fun saveBirthDate(
+    fun saveBirthDateInput(
         year: String,
         month: String,
         day: String,
@@ -42,9 +43,9 @@ interface HomeEvent {
 class HomeViewModel
 @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val getWeatherUseCase: GetWeatherUseCase,
-    private val getBirthDateUseCase: GetBirthDateUseCase,
-    private val saveBirthDateUseCase: SaveBirthDateUseCase,
+    private val getWeatherByLocation: GetWeatherByLocationUseCase,
+    private val getBirthDate: GetBirthDateUseCase,
+    private val saveBirthDate: SaveBirthDateUseCase,
 ) : BaseViewModel<HomeScreenModel>(savedStateHandle), HomeEvent {
 
     private val _lat = MutableStateFlow<Double?>(null)
@@ -78,13 +79,6 @@ class HomeViewModel
                 loadWeather(lat, lon)
             }
         }
-
-        // collect custom exception
-        viewModelScopeEH.launch {
-            customException.collect {
-                Timber.e(it.message)
-            }
-        }
     }
 
     private fun loadWeather(
@@ -96,7 +90,7 @@ class HomeViewModel
                 DataResource.loading(it.getDataOrNull())
             }
             _weather.update {
-                getWeatherUseCase(lat, lon).mapData { it.toPresentation() }
+                getWeatherByLocation(lat, lon).mapData(WeatherMapper::mapToLow)
             }
         }
     }
@@ -107,7 +101,7 @@ class HomeViewModel
                 DataResource.loading(it.getDataOrNull())
             }
             _birthDate.update {
-                getBirthDateUseCase().mapData { it.toPresentation() }
+                getBirthDate().mapData { it.toPresentation() }
             }
         }
     }
@@ -121,7 +115,7 @@ class HomeViewModel
         _lon.update { lon }
     }
 
-    override fun saveBirthDate(
+    override fun saveBirthDateInput(
         year: String,
         month: String,
         day: String,
@@ -131,7 +125,7 @@ class HomeViewModel
             DataResource.success(newBirthDate)
         }
         viewModelScope.launch(Dispatchers.IO) {
-            saveBirthDateUseCase(newBirthDate.toDomain())
+            saveBirthDate(newBirthDate.toDomain())
         }
     }
 }

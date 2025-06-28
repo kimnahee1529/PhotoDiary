@@ -108,7 +108,7 @@ fun HomeScreen(
                     .navigationBarsPadding(),
                 text = "확인하기",
                 onNextClick = {
-                    homeEvent.saveBirthDate(year, month, day)
+                    homeEvent.saveBirthDateInput(year, month, day)
                     navToResult()
                 },
             )
@@ -247,7 +247,7 @@ private fun PreviewMainScreen() {
         ),
         homeEvent = object : HomeEvent {
             override fun saveLocation(lat: Double, lon: Double) {}
-            override fun saveBirthDate(year: String, month: String, day: String) {}
+            override fun saveBirthDateInput(year: String, month: String, day: String) {}
         },
         navToResult = {},
     )

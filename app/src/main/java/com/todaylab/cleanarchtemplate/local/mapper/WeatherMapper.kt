@@ -4,7 +4,11 @@ import com.todaylab.cleanarchtemplate.core.BaseModelMapper
 import com.todaylab.cleanarchtemplate.data.model.WeatherEntity
 import com.todaylab.cleanarchtemplate.local.model.WeatherLocal
 
-
+/**
+ * Weather mapper
+ * - high level model: WeatherEntity (data layer)
+ * - low level model: WeatherLocal (local layer)
+ */
 internal object WeatherMapper : BaseModelMapper<WeatherEntity, WeatherLocal> {
     override fun mapToHigh(low: WeatherLocal): WeatherEntity {
         return WeatherEntity(
