@@ -7,12 +7,11 @@ import com.todaylab.cleanarchtemplate.domain.usecase.GetBirthDateUseCase
 import com.todaylab.cleanarchtemplate.domain.usecase.GetWeatherByLocationUseCase
 import com.todaylab.cleanarchtemplate.domain.usecase.SaveBirthDateUseCase
 import com.todaylab.cleanarchtemplate.presentation.BaseViewModel
+import com.todaylab.cleanarchtemplate.presentation.mapper.BirthDateMapper
 import com.todaylab.cleanarchtemplate.presentation.mapper.WeatherMapper
 import com.todaylab.cleanarchtemplate.presentation.model.BirthDateModel
 import com.todaylab.cleanarchtemplate.presentation.model.HomeScreenModel
 import com.todaylab.cleanarchtemplate.presentation.model.WeatherModel
-import com.todaylab.cleanarchtemplate.presentation.toDomain
-import com.todaylab.cleanarchtemplate.presentation.toPresentation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -101,7 +100,7 @@ class HomeViewModel
                 DataResource.loading(it.getDataOrNull())
             }
             _birthDate.update {
-                getBirthDate().mapData { it.toPresentation() }
+                getBirthDate().mapData(BirthDateMapper::mapToLow)
             }
         }
     }
@@ -125,7 +124,7 @@ class HomeViewModel
             DataResource.success(newBirthDate)
         }
         viewModelScope.launch(Dispatchers.IO) {
-            saveBirthDate(newBirthDate.toDomain())
+            saveBirthDate(BirthDateMapper.mapToHigh(newBirthDate))
         }
     }
 }
