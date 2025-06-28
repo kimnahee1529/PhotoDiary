@@ -11,6 +11,6 @@ class GetLuckyResultUseCaseImpl @Inject constructor(
 ) : GetLuckyResultUseCase {
 
     override suspend fun invoke(id: String): DataResource<LuckyResult> {
-        return luckyResultRepository.getLuckyResult(id)
+        return luckyResultRepository.getById(id)
     }
 }
