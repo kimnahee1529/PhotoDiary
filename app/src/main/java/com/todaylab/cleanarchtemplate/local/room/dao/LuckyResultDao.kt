@@ -11,15 +11,12 @@ import com.todaylab.cleanarchtemplate.local.room.RoomConstant
 @Dao
 interface LuckyResultDao {
     @Query(
-        "SELECT * " +
-                "FROM ${RoomConstant.TABLE.USER_LUCKY}" +
-                "WHERE id = :id"
+        "SELECT * FROM ${RoomConstant.TABLE.USER_LUCKY} WHERE id = :id"
     )
     suspend fun getById(id: String): LuckyResultLocal?
 
     @Query(
-        "SELECT * " +
-                "FROM ${RoomConstant.TABLE.USER_LUCKY}"
+        "SELECT * FROM ${RoomConstant.TABLE.USER_LUCKY}"
     )
     suspend fun getAll(): List<LuckyResultLocal>
 
@@ -27,9 +24,7 @@ interface LuckyResultDao {
     suspend fun save(item: LuckyResultLocal)
 
     @Query(
-        "DELETE " +
-                "FROM ${RoomConstant.TABLE.USER_LUCKY}" +
-                "WHERE id = :id"
+        "DELETE FROM ${RoomConstant.TABLE.USER_LUCKY} WHERE id = :id"
     )
     suspend fun deleteById(id: String)
 }
