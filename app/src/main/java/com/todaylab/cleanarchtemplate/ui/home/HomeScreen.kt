@@ -35,7 +35,7 @@ import com.todaylab.cleanarchtemplate.core.DataResource
 import com.todaylab.cleanarchtemplate.presentation.home.HomeEvent
 import com.todaylab.cleanarchtemplate.presentation.home.HomeViewModel
 import com.todaylab.cleanarchtemplate.ui.model.BirthDateState
-import com.todaylab.cleanarchtemplate.ui.model.HomeState
+import com.todaylab.cleanarchtemplate.ui.model.HomeScreenState
 import com.todaylab.cleanarchtemplate.ui.model.WeatherState
 import com.todaylab.cleanarchtemplate.ui.toUi
 import com.todaylab.cleanarchtemplate.ui.widget.InputCompleteButton
@@ -53,8 +53,8 @@ fun HomeRoute(
     navToResult: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
-    val homeStateModel by viewModel.stateModel.collectAsState()
-    val homeState = remember(homeStateModel) { homeStateModel.toUi() }
+    val homeModel by viewModel.screenModel.collectAsState()
+    val homeState = remember(homeModel) { homeModel.toUi() }
 
     HomeScreen(
         homeState = homeState,
@@ -67,7 +67,7 @@ fun HomeRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    homeState: HomeState,
+    homeState: HomeScreenState,
     homeEvent: HomeEvent,
     navToResult: () -> Unit,
     modifier: Modifier = Modifier
@@ -108,7 +108,7 @@ fun HomeScreen(
                     .navigationBarsPadding(),
                 text = "확인하기",
                 onNextClick = {
-                    homeEvent.saveBirthDate(year, month, day)
+                    homeEvent.saveBirthDateInput(year, month, day)
                     navToResult()
                 },
             )
@@ -230,7 +230,7 @@ fun HomeScreen(
 @Composable
 private fun PreviewMainScreen() {
     HomeScreen(
-        homeState = HomeState(
+        homeState = HomeScreenState(
             weather = DataResource.success(
                 WeatherState(
                     date = Date(),
@@ -247,7 +247,7 @@ private fun PreviewMainScreen() {
         ),
         homeEvent = object : HomeEvent {
             override fun saveLocation(lat: Double, lon: Double) {}
-            override fun saveBirthDate(year: String, month: String, day: String) {}
+            override fun saveBirthDateInput(year: String, month: String, day: String) {}
         },
         navToResult = {},
     )

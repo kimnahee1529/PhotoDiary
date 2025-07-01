@@ -19,34 +19,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.todaylab.cleanarchtemplate.core.DataResource
 import com.todaylab.cleanarchtemplate.presentation.result.ResultViewModel
+import com.todaylab.cleanarchtemplate.ui.mapper.LuckyResultMapper
 import com.todaylab.cleanarchtemplate.ui.model.LuckyResultState
-import com.todaylab.cleanarchtemplate.ui.toUi
 import timber.log.Timber
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ResultRoute(
-    navController: NavHostController,
     viewModel: ResultViewModel = hiltViewModel()
 ) {
-
-    val luckyResultModel by viewModel.resultModel.collectAsState()
-    val luckyResultState = remember(luckyResultModel) {
-        luckyResultModel.mapData {
-            it.toUi()
-        }
+    val resultModel by viewModel.screenModel.collectAsState()
+    val resultState = remember(resultModel) {
+        resultModel.mapData(LuckyResultMapper::mapToLow)
     }
 
     LaunchedEffect(Unit) {
-        Timber.d("luckyResult: ${luckyResultState}")
-
+        Timber.d("luckyResult: ${resultState}")
     }
 
     ResultScreen(
-        luckyResult = luckyResultState
+        luckyResult = resultState
     )
 }
 
@@ -70,8 +64,6 @@ fun ResultScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-//            LuckyNumber()
-//            LuckyAnimal()
             Text("$luckyResult")
         }
     }

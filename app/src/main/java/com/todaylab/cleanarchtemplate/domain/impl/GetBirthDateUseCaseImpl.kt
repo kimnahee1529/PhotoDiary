@@ -10,6 +10,6 @@ class GetBirthDateUseCaseImpl @Inject constructor(
     private val birthDateRepository: BirthDateRepository,
 ): GetBirthDateUseCase {
     override suspend operator fun invoke(): DataResource<BirthDate> {
-        return birthDateRepository.getBirthDate()
+        return birthDateRepository.get()
     }
 }

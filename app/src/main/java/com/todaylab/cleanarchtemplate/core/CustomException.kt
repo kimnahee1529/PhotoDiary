@@ -1,10 +1,10 @@
-package com.todaylab.cleanarchtemplate.remote
+package com.todaylab.cleanarchtemplate.core
 
 import java.io.IOException
 
 /**
  * Custom exception class for handling HTTP-like errors in the presentation layer.
- * 
+ *
  * @param code The HTTP status code associated with this exception
  * @param message Human-readable error message
  * @param data Optional additional data associated with the error
@@ -88,4 +88,3 @@ class CustomException(
         Unknown(0)
     }
 }
-

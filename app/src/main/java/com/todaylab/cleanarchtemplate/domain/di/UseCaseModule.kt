@@ -1,12 +1,12 @@
 package com.todaylab.cleanarchtemplate.domain.di
 
 import com.todaylab.cleanarchtemplate.domain.impl.GetBirthDateUseCaseImpl
-import com.todaylab.cleanarchtemplate.domain.impl.GetLuckyResultUseCaseImpl
-import com.todaylab.cleanarchtemplate.domain.impl.GetWeatherUseCaseImpl
+import com.todaylab.cleanarchtemplate.domain.impl.GetLuckyResultByIdUseCaseImpl
+import com.todaylab.cleanarchtemplate.domain.impl.GetWeatherByLocationUseCaseImpl
 import com.todaylab.cleanarchtemplate.domain.impl.SaveBirthDateUseCaseImpl
 import com.todaylab.cleanarchtemplate.domain.usecase.GetBirthDateUseCase
-import com.todaylab.cleanarchtemplate.domain.usecase.GetLuckyResultUseCase
-import com.todaylab.cleanarchtemplate.domain.usecase.GetWeatherUseCase
+import com.todaylab.cleanarchtemplate.domain.usecase.GetLuckyResultByIdUseCase
+import com.todaylab.cleanarchtemplate.domain.usecase.GetWeatherByLocationUseCase
 import com.todaylab.cleanarchtemplate.domain.usecase.SaveBirthDateUseCase
 import dagger.Binds
 import dagger.Module
@@ -20,7 +20,7 @@ abstract class UseCaseModule {
 
     @Binds
     @Singleton
-    abstract fun bindGetWeatherUseCase(impl: GetWeatherUseCaseImpl): GetWeatherUseCase
+    abstract fun bindGetWeatherByLocationUseCase(impl: GetWeatherByLocationUseCaseImpl): GetWeatherByLocationUseCase
 
     @Binds
     @Singleton
@@ -32,6 +32,5 @@ abstract class UseCaseModule {
 
     @Binds
     @Singleton
-    abstract fun bindGetLuckyResultUseCase(impl: GetLuckyResultUseCaseImpl): GetLuckyResultUseCase
-
+    abstract fun bindGetLuckyResultByIdUseCase(impl: GetLuckyResultByIdUseCaseImpl): GetLuckyResultByIdUseCase
 }
