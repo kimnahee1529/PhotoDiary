@@ -11,10 +11,11 @@ import com.todaylab.cleanarchtemplate.presentation.BaseViewModel
 import com.todaylab.cleanarchtemplate.presentation.model.LuckyResultModel
 import com.todaylab.cleanarchtemplate.presentation.toPresentation
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -38,23 +39,13 @@ class ResultViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun getLuckyResult() {
-        viewModelScope.launch {
-            val todayId = LocalDate.now().toYyyyMMdd()
-            val result = getLuckyResultUseCase(todayId)
-            when (val result = getLuckyResultUseCase(todayId)) {
-                is DataResource.Success -> {
-                    _resultModel.value = DataResource.success(result.data.toPresentation())
-                }
+        val resultId = LocalDate.now().toYyyyMMdd()
 
-                is DataResource.Loading -> {
-                    _resultModel.value = DataResource.loading()
-                }
-
-                is DataResource.Error -> {
-                    _resultModel.value = DataResource.error(result.throwable)
-                }
+        viewModelScope.launch(Dispatchers.IO) {
+            val luckyResult = getLuckyResultUseCase(resultId)
+            _resultModel.update {
+                luckyResult.mapData { it.toPresentation() }
             }
-            Timber.d("랜덤 결과: ${result}")
         }
     }
 }

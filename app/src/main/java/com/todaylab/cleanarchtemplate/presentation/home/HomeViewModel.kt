@@ -10,14 +10,16 @@ import com.todaylab.cleanarchtemplate.presentation.BaseViewModel
 import com.todaylab.cleanarchtemplate.presentation.model.BirthDateModel
 import com.todaylab.cleanarchtemplate.presentation.model.HomeStateModel
 import com.todaylab.cleanarchtemplate.presentation.model.WeatherModel
+import com.todaylab.cleanarchtemplate.presentation.toDomain
 import com.todaylab.cleanarchtemplate.presentation.toPresentation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -29,91 +31,83 @@ interface HomeEvent {
         lon: Double,
     )
 
-    fun setBirthDateYear(year: String)
-
-    fun setBirthDateMonth(month: String)
-
-    fun setBirthDateDay(day: String)
-
-    fun saveBirthDate()
+    fun saveBirthDate(
+        year: String,
+        month: String,
+        day: String,
+    )
 }
 
-// todo: implement BaseViewModel class
 @HiltViewModel
 class HomeViewModel
-@Inject
-constructor(
+@Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getWeatherUseCase: GetWeatherUseCase,
-    private val saveBirthDateUseCase: SaveBirthDateUseCase,
     private val getBirthDateUseCase: GetBirthDateUseCase,
-) : BaseViewModel(savedStateHandle),
-    HomeEvent {
-    private val _weatherModel = MutableStateFlow<DataResource<WeatherModel>>(DataResource.loading())
-    private val _birthDateState = MutableStateFlow<BirthDateModel>(BirthDateModel())
+    private val saveBirthDateUseCase: SaveBirthDateUseCase,
+) : BaseViewModel(savedStateHandle), HomeEvent {
 
-    private val _stateModel = MutableStateFlow<HomeStateModel>(HomeStateModel())
-    val stateModel: StateFlow<HomeStateModel> = _stateModel.asStateFlow()
+    private val _lat = MutableStateFlow<Double?>(null)
+    private val _lon = MutableStateFlow<Double?>(null)
+    private val _weather = MutableStateFlow<DataResource<WeatherModel>>(DataResource.loading())
+    private val _birthDate = MutableStateFlow<DataResource<BirthDateModel>>(DataResource.loading())
+
+    // Directly combine flows to create the stateModel
+    val stateModel: StateFlow<HomeStateModel> = combine(
+        _weather,
+        _birthDate
+    ) { weather, birthDate ->
+        HomeStateModel(weather = weather, birthDate = birthDate)
+    }.stateIn( // Use stateIn to convert the combined flow to a StateFlow
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = HomeStateModel()
+    )
+
+    val event: HomeEvent = this@HomeViewModel
 
     init {
+        loadBirthDate()
+
+        // load weather when current location is updated
+        viewModelScopeEH.launch {
+            combine(_lat, _lon) { lat, lon ->
+                lat to lon
+            }.collectLatest { (lat, lon) ->
+                if (lat == null || lon == null) return@collectLatest
+                loadWeather(lat, lon)
+            }
+        }
+
+        // collect custom exception
         viewModelScopeEH.launch {
             customException.collect {
                 Timber.e(it.message)
             }
-            }
-
-        viewModelScope.launch(Dispatchers.IO) {
-//                loadBirthDate()
         }
-        viewModelScope.launch(Dispatchers.IO) {
-            // todo load weather when current location is set
-            loadWeather(lat = 37.5, lon = 127.0)
-        }
-
-        combine(_weatherModel, _birthDateState) { weather, birthDate ->
-            _stateModel.update {
-                it.copy(
-                    weather = weather,
-                    birthDate = birthDate,
-                )
-            }
-        }.launchIn(viewModelScope)
     }
 
-    private suspend fun loadWeather(
+    private fun loadWeather(
         lat: Double,
         lon: Double,
     ) {
-        _weatherModel.update { it ->
-            when (it) {
-                is DataResource.Success -> DataResource.success(it.data)
-                is DataResource.Loading -> DataResource.loading(it.data)
-                is DataResource.Error -> DataResource.loading()
+        viewModelScopeEH.launch(Dispatchers.IO) {
+            _weather.update {
+                DataResource.loading(it.getDataOrNull())
+            }
+            _weather.update {
+                getWeatherUseCase(lat, lon).mapData { it.toPresentation() }
             }
         }
-                val weather = getWeatherUseCase(lat, lon)
-        Timber.d("weather use case - weather: $weather")
-                _weatherModel.update {
-                    when (weather) {
-                        is DataResource.Success -> DataResource.success(weather.data.toPresentation())
-                        is DataResource.Loading -> DataResource.loading(weather.data?.toPresentation())
-                        is DataResource.Error -> DataResource.error(weather.throwable)
-                    }
-                }
     }
 
-    private suspend fun loadBirthDate() {
-        viewModelScope.launch {
-            _birthDateState.update { it.copy(isLoading = true) }
-
-            val savedBirthDate = getBirthDateUseCase()
-            _birthDateState.update {
-                it.copy(
-                    isLoading = false,
-                    year = savedBirthDate?.year ?: "",
-                    month = savedBirthDate?.month ?: "",
-                    day = savedBirthDate?.day ?: "",
-                )
+    private fun loadBirthDate() {
+        viewModelScopeEH.launch(Dispatchers.IO) {
+            _birthDate.update {
+                DataResource.loading(it.getDataOrNull())
+            }
+            _birthDate.update {
+                getBirthDateUseCase().mapData { it.toPresentation() }
             }
         }
     }
@@ -122,27 +116,22 @@ constructor(
         lat: Double,
         lon: Double,
     ) {
-        TODO("Not yet implemented")
+        Timber.d("save location - $lat, $lon")
+        _lat.update { lat }
+        _lon.update { lon }
     }
 
-    override fun setBirthDateYear(year: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun setBirthDateMonth(month: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun setBirthDateDay(day: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun saveBirthDate() {
-        TODO("Not yet implemented")
-//        viewModelScope.launch {
-//            saveBirthDateUseCase(
-//                _birthDateState.value // todo: map to domain
-//            )
-//        }
+    override fun saveBirthDate(
+        year: String,
+        month: String,
+        day: String,
+    ) {
+        val newBirthDate = BirthDateModel(year, month, day)
+        _birthDate.update {
+            DataResource.success(newBirthDate)
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            saveBirthDateUseCase(newBirthDate.toDomain())
+        }
     }
 }

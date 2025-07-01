@@ -24,7 +24,7 @@ retrofit = "2.11.0"
 serialization = "1.7.3"
 serializationConverter = "1.0.0"
 timber = "5.0.1"
-coil = "2.7.0"
+coil = "3.2.0"
 klint = "12.1.1"
 appcompat = "1.7.1"
 material = "1.12.0"
@@ -59,7 +59,6 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 google-play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
 
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigation" }
-
 google-dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "daggerHilt" }
 google-dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "daggerHilt" }
 
@@ -69,18 +68,20 @@ androidx-room-runtime = { group = "androidx.room", name = "room-runtime", versio
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 
-mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 okhttp3-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okHttp" }
 okhttp3-urlconnection = { group = "com.squareup.okhttp3", name = "okhttp-urlconnection", version.ref = "okHttp" }
 okhttp3-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okHttp" }
-okhttp3-mockwebserver = { group = "com.squareup.okhttp3", name = "mockwebserver", version.ref = "okHttp" }
 squareup-retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
 kotlinx-serialization-converter = { group = "com.jakewharton.retrofit", name = "retrofit2-kotlinx-serialization-converter", version.ref = "serializationConverter" }
 
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+okhttp3-mockwebserver = { group = "com.squareup.okhttp3", name = "mockwebserver", version.ref = "okHttp" }
+
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 
-coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 
 truth = { module = "com.google.truth:truth", version.ref = "truth" }
 ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "uiTestManifest" }
@@ -88,6 +89,13 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activityVersion" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+
+[bundles]
+hilt = ["google-dagger-hilt", "hilt-navigation-compose"]
+room = ["androidx-room-ktx", "androidx-room-runtime"]
+retrofit = ["okhttp3-okhttp", "okhttp3-urlconnection", "okhttp3-logging-interceptor", "squareup-retrofit", "kotlinx-serialization-json", "kotlinx-serialization-converter"]
+coil = ["coil-compose", "coil-network-okhttp"]
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

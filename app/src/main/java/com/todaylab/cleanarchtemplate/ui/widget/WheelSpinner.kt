@@ -33,13 +33,11 @@ fun WheelSpinner(
 ) {
     val centerIndex = visibleItemsCount / 2
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = centerIndex)
-    var selected by remember { mutableStateOf("") }
 
     Box(
         modifier = modifier
             .height((visibleItemsCount * 40).dp) //Spinner 전체 높이
             .fillMaxWidth()
-//            .background(MaterialTheme.colors.grey6)
     ) {
         LazyColumn(
             state = listState,
@@ -49,7 +47,7 @@ fun WheelSpinner(
             items(items.size) { index ->
                 val isCenter = listState.firstVisibleItemIndex + centerIndex == index
                 val fontSize = if (isCenter) 24.sp else 16.sp
-                val alpha = if (isCenter) 1f else 0.1f // 미선택된 항목 투명도값
+                val alpha = if (isCenter) 1f else 0.1f
                 val weight = if (isCenter) FontWeight.Bold else FontWeight.Normal
 
                 Box(
@@ -62,13 +60,13 @@ fun WheelSpinner(
                         text = items[index],
                         fontSize = fontSize,
                         fontWeight = weight,
-                        color = Color.Black.copy(alpha = alpha) // 글자 색(전체)
+                        color = Color.Black.copy(alpha = alpha)
                     )
                 }
             }
         }
 
-//        // 가운데 항목 강조선
+        // 가운데 항목 강조선
 //        Box(
 //            modifier = Modifier
 //                .align(Alignment.Center)
@@ -94,8 +92,9 @@ fun WheelSpinner(
 }
 
 
+@Preview
 @Composable
-fun LanguagePicker() {
+private fun PreviewWheelSpinner() {
     val items = listOf("" , "", "1번", "2번", "3번", "4번", "5번", "6번", "7번", "8번", "9번", "10번", "", "")
     var selected by remember { mutableStateOf("") }
 
@@ -105,11 +104,4 @@ fun LanguagePicker() {
         Spacer(modifier = Modifier.height(16.dp))
         Text("선택된 항목: $selected")
     }
-}
-
-
-@Preview
-@Composable
-fun PreviewWheelSpinner() {
-    LanguagePicker()
 }

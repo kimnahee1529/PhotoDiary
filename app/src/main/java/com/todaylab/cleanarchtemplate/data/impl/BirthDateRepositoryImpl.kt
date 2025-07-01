@@ -1,5 +1,6 @@
 package com.todaylab.cleanarchtemplate.data.impl
 
+import com.todaylab.cleanarchtemplate.core.DataResource
 import com.todaylab.cleanarchtemplate.data.local.BirthDateLocalDataSource
 import com.todaylab.cleanarchtemplate.data.toData
 import com.todaylab.cleanarchtemplate.data.toDomain
@@ -11,11 +12,12 @@ class BirthDateRepositoryImpl @Inject constructor(
     private val birthDateLocalDataSource: BirthDateLocalDataSource
 ): BirthDateRepository{
     override suspend fun saveBirthDate(birthDate: BirthDate) {
-        return birthDateLocalDataSource.saveBirthDate(birthDate.toData())
+        birthDateLocalDataSource.saveBirthDate(birthDate.toData())
     }
 
-    override suspend fun getBirthDate(): BirthDate? {
-        return birthDateLocalDataSource.getBirthDate()?.toDomain()
+    override suspend fun getBirthDate(): DataResource<BirthDate> {
+        val localBirthDate = birthDateLocalDataSource.getBirthDate()
+        return localBirthDate.mapData { it.toDomain() }
     }
 
 }

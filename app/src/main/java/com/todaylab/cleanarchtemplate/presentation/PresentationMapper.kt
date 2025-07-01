@@ -22,6 +22,12 @@ internal fun BirthDate.toPresentation() = BirthDateModel(
     day = day,
 )
 
+internal fun BirthDateModel.toDomain() = BirthDate(
+    year = year,
+    month = month,
+    day = day,
+)
+
 internal fun LuckyResult.toPresentation() = LuckyResultModel(
     id = id,
     date = date,

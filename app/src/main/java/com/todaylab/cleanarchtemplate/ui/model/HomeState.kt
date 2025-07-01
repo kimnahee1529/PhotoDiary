@@ -4,5 +4,5 @@ import com.todaylab.cleanarchtemplate.core.DataResource
 
 data class HomeState(
     val weather: DataResource<WeatherState> = DataResource.loading(),
-    val birthDate: BirthDateState = BirthDateState(),
+    val birthDate: DataResource<BirthDateState> = DataResource.loading(),
 )
