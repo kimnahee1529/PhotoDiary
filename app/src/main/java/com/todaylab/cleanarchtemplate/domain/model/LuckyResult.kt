@@ -35,7 +35,7 @@ data class LuckyResult(
         }
 
         private fun getRandomAnimal(): String {
-            val animals = listOf("🐶 강아지", "🐱 고양이", "🐰 토끼", "🦊 여우", "🐼 판다", "🐵 원숭이", "🐸 개구리", "🐧 펭귄")
+            val animals = listOf("강아지", "고양이", "토끼", "여우", "판다", "원숭이", "개구리",)
             return animals.random()
         }
 
@@ -57,11 +57,11 @@ data class LuckyResult(
 
 enum class Color {
     RED,
-    BLUE,
-    GREEN,
-    YELLOW,
-    PURPLE,
     ORANGE,
+    YELLOW,
+    GREEN,
+    BLUE,
+    PURPLE,
     BLACK,
     WHITE,
     PINK

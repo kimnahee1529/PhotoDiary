@@ -10,3 +10,9 @@ fun LocalDate.toYyyyMMdd(): String {
     val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
     return this.format(formatter)
 }
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun LocalDate.createDateBasedId(): String {
+    val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
+    return this.format(formatter)
+}

@@ -1,6 +1,7 @@
 package com.todaylab.cleanarchtemplate.ui.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -74,7 +75,10 @@ fun WheelSpinnerSelector(
                 .height(50.dp)
                 .weight(1f)
                 .background(
-                    color = MaterialTheme.colors.grey2, shape = RoundedCornerShape(6.dp)
+                    color = MaterialTheme.colors.white, shape = RoundedCornerShape(6.dp)
+                )
+                .border(
+                    width = 1.dp, color = MaterialTheme.colors.gray9, shape = RoundedCornerShape(6.dp)
                 )
                 .clickable { onClick() },
             contentAlignment = Alignment.CenterStart,
