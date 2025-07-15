@@ -1,9 +1,7 @@
-package com.todaylab.cleanarchtemplate.ui.widget
+package com.todaylab.cleanarchtemplate.ui.widget.spinner
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,7 +27,7 @@ fun WheelSpinner(
     items: List<String>,
     modifier: Modifier = Modifier,
     visibleItemsCount: Int = 5,
-    onSelected: (String) -> Unit
+    onItemSelect: (String) -> Unit
 ) {
     val centerIndex = visibleItemsCount / 2
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = centerIndex)
@@ -65,15 +63,6 @@ fun WheelSpinner(
                 }
             }
         }
-
-        // 가운데 항목 강조선
-//        Box(
-//            modifier = Modifier
-//                .align(Alignment.Center)
-//                .fillMaxWidth()
-//                .height(40.dp)
-//                .border(1.dp, Color.DarkGray)
-//        )
     }
 
     // 스크롤 멈추면 가운데 항목 선택 + 정렬
@@ -81,9 +70,10 @@ fun WheelSpinner(
         if (!listState.isScrollInProgress) {
             val selectedIndex = listState.firstVisibleItemIndex + centerIndex
             if (selectedIndex in items.indices) {
-                onSelected(items[selectedIndex])
+                onItemSelect(items[selectedIndex])
 
-                val targetIndex = (selectedIndex - centerIndex).coerceIn(0, items.size - visibleItemsCount)
+                val targetIndex =
+                    (selectedIndex - centerIndex).coerceIn(0, items.size - visibleItemsCount)
                 listState.animateScrollToItem(targetIndex)
 
             }
@@ -95,13 +85,8 @@ fun WheelSpinner(
 @Preview
 @Composable
 private fun PreviewWheelSpinner() {
-    val items = listOf("" , "", "1번", "2번", "3번", "4번", "5번", "6번", "7번", "8번", "9번", "10번", "", "")
+    val items = listOf("", "", "1번", "2번", "3번", "4번", "5번", "6번", "7번", "8번", "9번", "10번", "", "")
     var selected by remember { mutableStateOf("") }
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        WheelSpinner(items = items, onSelected = { selected = it })
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Text("선택된 항목: $selected")
-    }
+    WheelSpinner(items = items, onItemSelect = { selected = it })
 }

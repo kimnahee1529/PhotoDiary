@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,10 +24,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
@@ -49,14 +45,8 @@ import com.todaylab.cleanarchtemplate.ui.theme.LuckyTheme
 import com.todaylab.cleanarchtemplate.ui.theme.colors
 import com.todaylab.cleanarchtemplate.ui.toUi
 import com.todaylab.cleanarchtemplate.ui.widget.InputCompleteButton
-import com.todaylab.cleanarchtemplate.ui.widget.WheelSpinner
 import java.util.Date
 
-data class SpinnerState(
-    val label: String,
-    val items: List<String>,
-    val onSelected: (String) -> Unit,
-)
 
 @Composable
 fun HomeRoute(
@@ -82,13 +72,14 @@ fun HomeScreen(
     navToResult: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var year by remember { mutableStateOf("") }
-    var month by remember { mutableStateOf("") }
-    var day by remember { mutableStateOf("") }
-
-    // Dialog 상태
-    var spinnerDialogState by remember {
-        mutableStateOf<SpinnerState?>(null)
+    val (year, setYear) = remember {
+        mutableStateOf(homeState.birthDate.getDataOrNull()?.year ?: "")
+    }
+    val (month, setMonth) = remember {
+        mutableStateOf(homeState.birthDate.getDataOrNull()?.month ?: "")
+    }
+    val (day, setDay) = remember {
+        mutableStateOf(homeState.birthDate.getDataOrNull()?.day ?: "")
     }
 
     Scaffold(
@@ -133,7 +124,6 @@ fun HomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-//            Spacer(modifier = Modifier.height(30.dp))
                 Image(
                     painter = painterResource(id = R.drawable.lucky),
                     contentDescription = null,
@@ -141,77 +131,20 @@ fun HomeScreen(
                         .width(200.dp),
                 )
 
-                // 생년월일 WheelSpinner 텍스트필드
-                Row(
+                BirthDateInput(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(24.dp)
-                ) {
-                    WheelSpinnerSelector(
-                        modifier = Modifier.weight(2f),
-                        savedText = homeState.birthDate.getDataOrNull()?.year ?: "",
-                        selectedText = year,
-                        label = "년",
-                        onClick = {
-                            spinnerDialogState = SpinnerState(
-                                label = "년",
-                                items = listOf(
-                                    "",
-                                    "",
-                                    * (1900..2024).map { it.toString() }.toTypedArray(),
-                                    "",
-                                    ""
-                                ),
-                                onSelected = { year = it }
-                            )
-                        }
-                    )
-
-                    WheelSpinnerSelector(
-                        modifier = Modifier.weight(1f),
-                        savedText = homeState.birthDate.getDataOrNull()?.month ?: "",
-                        selectedText = month,
-                        label = "월",
-                        onClick = {
-                            spinnerDialogState = SpinnerState(
-                                label = "월",
-                                items = listOf(
-                                    "",
-                                    "",
-                                    * (1..12).map { it.toString() }.toTypedArray(),
-                                    "",
-                                    ""
-                                ),
-                                onSelected = { month = it }
-                            )
-                        }
-                    )
-
-                    WheelSpinnerSelector(
-                        modifier = Modifier.weight(1f),
-                        savedText = homeState.birthDate.getDataOrNull()?.day ?: "",
-                        selectedText = day,
-                        label = "일",
-                        onClick = {
-                            spinnerDialogState = SpinnerState(
-                                label = "일",
-                                items = listOf(
-                                    "",
-                                    "",
-                                    * (1..31).map { it.toString() }.toTypedArray(),
-                                    "",
-                                    ""
-                                ),
-                                onSelected = { day = it }
-                            )
-                        }
-                    )
-                }
+                    year = year,
+                    month = month,
+                    day = day,
+                    onYearSelect = setYear,
+                    onMonthSelect = setMonth,
+                    onDaySelect = setDay,
+                )
 
                 InputCompleteButton(
                     modifier = Modifier
-//                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                         .navigationBarsPadding(),
                     text = "확인하기",
                     onNextClick = {
@@ -220,27 +153,11 @@ fun HomeScreen(
                     },
                 )
             }
-
-            // 실제 다이얼로그는 최하단에서 그려야 안전
-            spinnerDialogState?.let { state ->
-                CenteredButtonDialog(
-                    onDismissRequest = { spinnerDialogState = null },
-                    onConfirm = { spinnerDialogState = null },
-                    content = {
-                        WheelSpinner(
-                            items = state.items,
-                            onSelected = {
-                                state.onSelected(it)
-                            },
-                        )
-                    },
-                )
-            }
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun PreviewMainScreen() {
     LuckyTheme {
