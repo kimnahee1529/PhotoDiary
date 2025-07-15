@@ -5,11 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -44,7 +42,7 @@ import com.todaylab.cleanarchtemplate.ui.model.WeatherState
 import com.todaylab.cleanarchtemplate.ui.theme.LuckyTheme
 import com.todaylab.cleanarchtemplate.ui.theme.colors
 import com.todaylab.cleanarchtemplate.ui.toUi
-import com.todaylab.cleanarchtemplate.ui.widget.InputCompleteButton
+import com.todaylab.cleanarchtemplate.ui.widget.LuckyButton
 import java.util.Date
 
 
@@ -87,40 +85,38 @@ fun HomeScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Column {
-                        Text(
-                            modifier = Modifier.padding(top = 10.dp),
-                            text = stringResource(id = R.string.lucky_introduction),
-                            fontFamily = FontFamily(Font(R.font.backdahyeon_font)),
-                            fontSize = 45.dp.value.sp,
-                            color = MaterialTheme.colors.text1
-                        )
-//                        Spacer(modifier = Modifier.weight(1f))
-                        CurrentWeatherIcon(
-                            weather = homeState.weather,
-                            shouldRequestLocationPermission = true,
-                            saveLocation = homeEvent::saveLocation,
-                            modifier = Modifier
-                                .width(120.dp)
-//                                .wrapContentHeight()
-                                .height(140.dp)
-                        )
-                    }
+                    Text(
+                        modifier = Modifier
+                            .padding(top = 10.dp),
+                        text = stringResource(id = R.string.lucky_introduction),
+                        fontFamily = FontFamily(Font(R.font.backdahyeon_font)),
+                        fontSize = 45.dp.value.sp,
+                        color = MaterialTheme.colors.text1
+                    )
+
                 },
             )
         },
     ) { innerPadding ->
-        Spacer(modifier = Modifier.height(20.dp))
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+            CurrentWeatherIcon(
+                weather = homeState.weather,
+                shouldRequestLocationPermission = true,
+                saveLocation = homeEvent::saveLocation,
+                modifier = Modifier
+                    .width(60.dp)
+                    .height(60.dp)
+                    .align(Alignment.TopEnd)
+            )
             Column(
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 20.dp),
+                    .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
@@ -130,7 +126,6 @@ fun HomeScreen(
                     modifier = Modifier
                         .width(200.dp),
                 )
-
                 BirthDateInput(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -142,17 +137,18 @@ fun HomeScreen(
                     onMonthSelect = setMonth,
                     onDaySelect = setDay,
                 )
-
-                InputCompleteButton(
-                    modifier = Modifier
-                        .navigationBarsPadding(),
-                    text = "확인하기",
-                    onNextClick = {
-                        homeEvent.saveBirthDateInput(year, month, day)
-                        navToResult()
-                    },
-                )
             }
+            LuckyButton(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 20.dp),
+                text = "확인하기",
+                enabled = (year.isNotBlank() && month.isNotBlank() && day.isNotBlank()),
+                onClick = {
+                    homeEvent.saveBirthDateInput(year, month, day)
+                    navToResult()
+                },
+            )
         }
     }
 }

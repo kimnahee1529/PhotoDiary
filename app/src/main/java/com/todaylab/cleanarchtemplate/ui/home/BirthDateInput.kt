@@ -26,16 +26,16 @@ fun BirthDateInput(
             modifier = Modifier.weight(1f),
             text = year,
             label = "년",
-            placeholderText = "태어난 년도",
+            placeholderText = "yyyy",
             onSpinnerItemSelect = onYearSelect,
-            spinnerItems = (1900..2023).map { it.toString() }
+            spinnerItems = (1900..2025).map { it.toString() }.reversed()
         )
         Spacer(modifier = Modifier.width(4.dp))
         WheelSpinnerPicker(
             modifier = Modifier.weight(1f),
             text = month,
             label = "월",
-            placeholderText = "태어난 달",
+            placeholderText = "MM",
             onSpinnerItemSelect = onMonthSelect,
             spinnerItems = (1..12).map { it.toString() }
         )
@@ -44,7 +44,7 @@ fun BirthDateInput(
             modifier = Modifier.weight(1f),
             text = day,
             label = "일",
-            placeholderText = "태어난 날",
+            placeholderText = "dd",
             onSpinnerItemSelect = onDaySelect,
             spinnerItems = (1..31).map { it.toString() }
         )
