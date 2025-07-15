@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.todaylab.cleanarchtemplate.ui.theme.LuckyTheme
 
 @Composable
 fun WheelSpinner(
@@ -58,6 +60,7 @@ fun WheelSpinner(
                         text = items[index],
                         fontSize = fontSize,
                         fontWeight = weight,
+                        style = MaterialTheme.typography.labelMedium,
                         color = Color.Black.copy(alpha = alpha)
                     )
                 }
@@ -88,5 +91,7 @@ private fun PreviewWheelSpinner() {
     val items = listOf("", "", "1번", "2번", "3번", "4번", "5번", "6번", "7번", "8번", "9번", "10번", "", "")
     var selected by remember { mutableStateOf("") }
 
-    WheelSpinner(items = items, onItemSelect = { selected = it })
+    LuckyTheme {
+        WheelSpinner(items = items, onItemSelect = { selected = it })
+    }
 }

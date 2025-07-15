@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.todaylab.cleanarchtemplate.ui.theme.LuckyTheme
 import com.todaylab.cleanarchtemplate.ui.widget.spinner.WheelSpinnerPicker
 
 @Composable
@@ -64,12 +65,14 @@ private fun PreviewBirthDateInput() {
         mutableStateOf("")
     }
 
-    BirthDateInput(
-        year = birthYear,
-        month = birthMonth,
-        day = birthDay,
-        onYearSelect = setBirthYear,
-        onMonthSelect = setBirthMonth,
-        onDaySelect = setBirthDay
-    )
+    LuckyTheme {
+        BirthDateInput(
+            year = birthYear,
+            month = birthMonth,
+            day = birthDay,
+            onYearSelect = setBirthYear,
+            onMonthSelect = setBirthMonth,
+            onDaySelect = setBirthDay
+        )
+    }
 }

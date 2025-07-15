@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,6 +15,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.todaylab.cleanarchtemplate.ui.theme.LuckyTheme
+import com.todaylab.cleanarchtemplate.ui.widget.LuckyButton
 
 @Composable
 fun ConfirmButtonDialog(
@@ -37,9 +37,7 @@ fun ConfirmButtonDialog(
             ) {
                 content()
                 Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = onConfirm) {
-                    Text("확인", style = MaterialTheme.typography.titleMedium)
-                }
+                LuckyButton(text = "확인", onClick = onConfirm)
             }
         }
     }
@@ -48,11 +46,13 @@ fun ConfirmButtonDialog(
 @Preview
 @Composable
 private fun PreviewConfirmButtonDialog() {
-    ConfirmButtonDialog(
-        onDismissRequest = {},
-        onConfirm = {},
-        content = {
-            Text("Dialog Content")
-        },
-    )
+    LuckyTheme {
+        ConfirmButtonDialog(
+            onDismissRequest = {},
+            onConfirm = {},
+            content = {
+                Text("Dialog Content")
+            },
+        )
+    }
 }

@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.todaylab.cleanarchtemplate.ui.theme.LuckyTheme
 import com.todaylab.cleanarchtemplate.ui.theme.colors
 import com.todaylab.cleanarchtemplate.ui.widget.dialog.ConfirmButtonDialog
 
@@ -99,11 +100,13 @@ private fun PreviewWheelSpinnerPicker() {
         mutableStateOf("")
     }
 
-    WheelSpinnerPicker(
-        label = "월",
-        text = pickerValue,
-        placeholderText = "태어난 월",
-        onSpinnerItemSelect = setPickerValue,
-        spinnerItems = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12")
-    )
+    LuckyTheme {
+        WheelSpinnerPicker(
+            label = "월",
+            text = pickerValue,
+            placeholderText = "태어난 월",
+            onSpinnerItemSelect = setPickerValue,
+            spinnerItems = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12")
+        )
+    }
 }

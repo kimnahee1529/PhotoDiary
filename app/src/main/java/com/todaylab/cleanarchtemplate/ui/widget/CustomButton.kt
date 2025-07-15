@@ -120,7 +120,9 @@ fun LuckyDialogButton(
 @Preview
 @Composable
 private fun SkipButtonPreview() {
-    SkipButton(text = "나중에 입력할게요")
+    LuckyTheme {
+        SkipButton(text = "나중에 입력할게요")
+    }
 }
 
 
