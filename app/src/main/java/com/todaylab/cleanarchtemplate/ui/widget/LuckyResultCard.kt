@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
@@ -18,24 +17,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.todaylab.cleanarchtemplate.R
-import com.todaylab.cleanarchtemplate.core.floatingAnimationShared
 import com.todaylab.cleanarchtemplate.ui.model.LuckyResultState
 import com.todaylab.cleanarchtemplate.ui.theme.LuckyTheme
+import com.todaylab.cleanarchtemplate.ui.util.floatingAnimationShared
 import com.todaylab.cleanarchtemplate.ui.widget.card.FlipAnimationCard
 import com.todaylab.cleanarchtemplate.ui.widget.card.LuckyItemCard
-import kotlinx.coroutines.delay
 import java.time.LocalDate
 
 // 확대, 블러 관련된 주석들은 카드 클릭했을 때 확대된 카드 만들기 위해서 작성해놓은 코드
