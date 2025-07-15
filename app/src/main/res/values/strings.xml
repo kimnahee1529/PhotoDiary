@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">clean-arch-template</string>
+
+    <string name="lucky_introduction">오늘 행운을 찾으러 가봐요!</string>
+    <string name="lucky_result_question">"오늘 행운의 운세는? ☘"</string>
+    <string name="result_animal">동물</string>
+    <string name="result_number">숫자</string>
+    <string name="result_initial">초성</string>
+    <string name="result_color">색깔</string>
 </resources>

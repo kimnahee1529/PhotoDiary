@@ -11,6 +11,10 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.todaylab.cleanarchtemplate.R
 
+val DahyeonFontFamily = FontFamily(
+    Font(R.font.backdahyeon_font, weight = FontWeight.Normal)
+)
+
 private val LuckyFontFamily = FontFamily(
     Font(R.font.pretendard_black, weight = FontWeight.Black),
     Font(R.font.pretendard_bold, weight = FontWeight.Bold),
@@ -231,6 +235,13 @@ val Typography = LuckyTypography(
         fontSize = 14.sp,
         lineHeight = 14.sp * 1.6, // 160%
         letterSpacing = (-0.01).em // -0.01%
+    ),
+    cardTitle = TextStyle(
+        fontFamily = DahyeonFontFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 20.sp,
+        lineHeight = 16.sp * 1.6,
+        letterSpacing = (-0.01).em
     )
 )
 
@@ -266,6 +277,7 @@ data class LuckyTypography(
     val labelM: TextStyle = TextStyle.Default,
     val labelR: TextStyle = TextStyle.Default,
     val labelL: TextStyle = TextStyle.Default,
+    val cardTitle: TextStyle = TextStyle.Default,
 )
 
 val LocalTypography = staticCompositionLocalOf { LuckyTypography() }
