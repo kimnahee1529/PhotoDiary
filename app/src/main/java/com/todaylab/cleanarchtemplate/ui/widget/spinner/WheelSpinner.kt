@@ -76,8 +76,9 @@ fun WheelSpinner(
                 onItemSelect(items[selectedIndex])
 
                 val targetIndex =
-                    (selectedIndex - centerIndex).coerceIn(0, items.size - visibleItemsCount)
+                    (selectedIndex - centerIndex).coerceIn(0, items.size - 1)
                 listState.animateScrollToItem(targetIndex)
+
 
             }
         }
