@@ -67,8 +67,7 @@ fun ResultScreen(
                     Text(
                         modifier = Modifier.padding(top = 10.dp),
                         text = stringResource(R.string.lucky_result_question),
-                        fontFamily = FontFamily(Font(R.font.backdahyeon_font)),
-                        fontSize = 45.dp.value.sp,
+                        style = MaterialTheme.typography.displayMedium,
                         color = MaterialTheme.colors.text1
                     )
                 },
