@@ -45,7 +45,7 @@ fun LuckyResultContent(
                 text = "$label",
                 fontFamily = FontFamily(Font(R.font.backdahyeon_font)),
                 fontSize = 40.sp,
-                color = MaterialTheme.colors.text2
+                color = MaterialTheme.colors.white
             )
         } else {
             // 뒷면
