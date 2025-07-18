@@ -16,6 +16,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -23,6 +25,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -40,8 +43,11 @@ import com.todaylab.cleanarchtemplate.ui.model.WeatherState
 import com.todaylab.cleanarchtemplate.ui.theme.LuckyTheme
 import com.todaylab.cleanarchtemplate.ui.theme.colors
 import com.todaylab.cleanarchtemplate.ui.toUi
-import com.todaylab.cleanarchtemplate.ui.widget.LuckyButton
+import com.todaylab.cleanarchtemplate.ui.widget.CloverButton
+import timber.log.Timber
 import java.util.Date
+import kotlinx.coroutines.launch
+
 
 
 @Composable
@@ -68,6 +74,9 @@ fun HomeScreen(
     navToResult: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
     val (year, setYear) = remember {
         mutableStateOf(homeState.birthDate.getDataOrNull()?.year ?: "")
     }
@@ -77,6 +86,8 @@ fun HomeScreen(
     val (day, setDay) = remember {
         mutableStateOf(homeState.birthDate.getDataOrNull()?.day ?: "")
     }
+
+    Timber.e("날짜 들어있음?  year:$year month:$month day:$day")
 
     Scaffold(
         modifier = modifier.background(color = MaterialTheme.colors.white),
@@ -88,13 +99,40 @@ fun HomeScreen(
                             modifier = Modifier
                                 .padding(top = 10.dp),
                             text = stringResource(id = R.string.lucky_introduction),
-                            style = MaterialTheme.typography.headlineLarge,
+                            style = MaterialTheme.typography.displayMedium,
                             color = MaterialTheme.colors.text1
                         )
                     }
                 },
             )
         },
+//        bottomBar = {
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxWidth(),
+//                contentAlignment = Alignment.Center
+//            ) {
+//                CloverButton(
+//                    modifier = Modifier
+//                        .padding(bottom = 60.dp),
+//                    text = "행운 찾기",
+//                    enabled = (year.isNotBlank() && month.isNotBlank() && day.isNotBlank()),
+//                    onClick = {
+//                        if (year.isBlank() || month.isBlank() || day.isBlank()) {
+//                            coroutineScope.launch {
+//                                snackbarHostState.showSnackbar("생년월일을 모두 입력해 주세요.")
+//                            }
+//                        } else {
+//                            homeEvent.saveBirthDateInput(year, month, day)
+//                            navToResult()
+//                        }
+//                    },
+//                )
+//            }
+//        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        }
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -117,16 +155,16 @@ fun HomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(30.dp),
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.lucky),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .width(200.dp),
-                )
+//                Image(
+//                    painter = painterResource(id = R.drawable.lucky),
+//                    contentDescription = null,
+//                    modifier = Modifier
+//                        .width(200.dp),
+//                )
                 BirthDateInput(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
+                        .padding(horizontal = 12.dp),
                     year = year,
                     month = month,
                     day = day,
@@ -135,15 +173,22 @@ fun HomeScreen(
                     onDaySelect = setDay,
                 )
             }
-            LuckyButton(
+            CloverButton(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 20.dp),
-                text = "확인하기",
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                text = "행운 찾기",
                 enabled = (year.isNotBlank() && month.isNotBlank() && day.isNotBlank()),
                 onClick = {
-                    homeEvent.saveBirthDateInput(year, month, day)
-                    navToResult()
+                    if (year.isBlank() || month.isBlank() || day.isBlank()) {
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar("생년월일을 모두 입력해 주세요.")
+                        }
+                    } else {
+                        homeEvent.saveBirthDateInput(year, month, day)
+                        navToResult()
+                    }
                 },
             )
         }
