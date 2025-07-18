@@ -1,19 +1,13 @@
 package com.todaylab.cleanarchtemplate.ui.theme
 
-import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.platform.LocalContext
 import kr.co.ui.theme.ColorSet
 import kr.co.ui.theme.LuckyColor
 
@@ -34,13 +28,32 @@ fun LuckyTheme(
         colorSet.lightColors
     }
 
+
+    val defaultTypography = MaterialTheme.typography
+    val customTypography = Typography(
+        displayLarge = defaultTypography.displayLarge.copy(fontFamily = DahyeonFontFamily),
+        displayMedium = defaultTypography.displayMedium.copy(fontFamily = DahyeonFontFamily),
+        displaySmall = defaultTypography.displaySmall.copy(fontFamily = DahyeonFontFamily),
+        headlineLarge = defaultTypography.headlineLarge.copy(fontFamily = DahyeonFontFamily),
+        headlineMedium = defaultTypography.headlineMedium.copy(fontFamily = DahyeonFontFamily),
+        headlineSmall = defaultTypography.headlineSmall.copy(fontFamily = DahyeonFontFamily),
+        titleLarge = defaultTypography.titleLarge.copy(fontFamily = DahyeonFontFamily),
+        titleMedium = defaultTypography.titleMedium.copy(fontFamily = DahyeonFontFamily),
+        titleSmall = defaultTypography.titleSmall.copy(fontFamily = DahyeonFontFamily),
+        bodyLarge = defaultTypography.bodyLarge.copy(fontFamily = DahyeonFontFamily),
+        bodyMedium = defaultTypography.bodyMedium.copy(fontFamily = DahyeonFontFamily),
+        bodySmall = defaultTypography.bodySmall.copy(fontFamily = DahyeonFontFamily),
+        labelLarge = defaultTypography.labelLarge.copy(fontFamily = DahyeonFontFamily),
+        labelMedium = defaultTypography.labelMedium.copy(fontFamily = DahyeonFontFamily),
+        labelSmall = defaultTypography.labelSmall.copy(fontFamily = DahyeonFontFamily),
+    )
+
     CompositionLocalProvider(LocalColors provides colors) {
-        CompositionLocalProvider(LocalTypography provides Typography) {
-            MaterialTheme(
-                content = content,
-                shapes = shapes,
-            )
-        }
+        MaterialTheme(
+            content = content,
+            typography = customTypography,
+            shapes = shapes,
+        )
     }
 }
 
@@ -48,8 +61,3 @@ val MaterialTheme.colors: LuckyColor
     @Composable
     @ReadOnlyComposable
     get() = LocalColors.current
-
-val MaterialTheme.typo: LuckyTypography
-    @Composable
-    @ReadOnlyComposable
-    get() = LocalTypography.current

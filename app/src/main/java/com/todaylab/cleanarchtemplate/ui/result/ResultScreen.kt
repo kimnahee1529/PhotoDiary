@@ -30,10 +30,8 @@ import com.todaylab.cleanarchtemplate.core.DataResource
 import com.todaylab.cleanarchtemplate.presentation.result.ResultViewModel
 import com.todaylab.cleanarchtemplate.ui.mapper.LuckyResultMapper
 import com.todaylab.cleanarchtemplate.ui.model.LuckyResultState
-import com.todaylab.cleanarchtemplate.ui.theme.LocalTypography
 import com.todaylab.cleanarchtemplate.ui.theme.LuckyTheme
 import com.todaylab.cleanarchtemplate.ui.theme.colors
-import com.todaylab.cleanarchtemplate.ui.theme.typo
 import com.todaylab.cleanarchtemplate.ui.widget.LuckyResultPropertiesDisplay
 import timber.log.Timber
 
@@ -108,7 +106,7 @@ fun ResultScreenPreview() {
     LuckyTheme {
         Text(
             text = "오늘 행운의 운세는? ☘",
-            style = MaterialTheme.typo.cardTitle
+            style = MaterialTheme.typography.bodyLarge
         )
     }
 }

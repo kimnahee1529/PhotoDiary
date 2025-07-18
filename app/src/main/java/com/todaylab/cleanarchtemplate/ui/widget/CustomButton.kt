@@ -11,55 +11,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.todaylab.cleanarchtemplate.ui.theme.LuckyTheme
 import com.todaylab.cleanarchtemplate.ui.theme.colors
-import com.todaylab.cleanarchtemplate.ui.theme.typo
-
-@Composable
-fun CustomButton(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    containerColor: Color,
-    contentColor: Color,
-    shape: RoundedCornerShape = RoundedCornerShape(0.dp),
-    textStyle: androidx.compose.ui.text.TextStyle = MaterialTheme.typo.body1
-) {
-    Button(
-        onClick = onClick,
-        modifier = modifier,
-        shape = shape,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = containerColor,
-            contentColor = contentColor
-        )
-    ) {
-        Text(
-            text,
-            style = textStyle
-        )
-    }
-}
-
-@Composable
-fun SkipButton(
-    modifier: Modifier = Modifier,
-    text: String,
-    onSkipClick: () -> Unit = {}
-) {
-    CustomButton(
-        text = text,
-        onClick = onSkipClick,
-        containerColor = Color.Transparent,
-        modifier = modifier
-            .fillMaxWidth(),
-        contentColor = MaterialTheme.colors.secondary
-    )
-}
-
 
 @Composable
 fun LuckyButton(
@@ -84,7 +39,7 @@ fun LuckyButton(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typo.button,
+            style = MaterialTheme.typography.titleLarge,
         )
     }
 }
@@ -112,16 +67,8 @@ fun LuckyDialogButton(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typo.button,
+            style = MaterialTheme.typography.titleLarge,
         )
-    }
-}
-
-@Preview
-@Composable
-private fun SkipButtonPreview() {
-    LuckyTheme {
-        SkipButton(text = "나중에 입력할게요")
     }
 }
 

@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,11 +27,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.todaylab.cleanarchtemplate.R
 import com.todaylab.cleanarchtemplate.core.DataResource
@@ -85,20 +83,19 @@ fun HomeScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        modifier = Modifier
-                            .padding(top = 10.dp),
-                        text = stringResource(id = R.string.lucky_introduction),
-                        fontFamily = FontFamily(Font(R.font.backdahyeon_font)),
-                        fontSize = 45.dp.value.sp,
-                        color = MaterialTheme.colors.text1
-                    )
-
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            modifier = Modifier
+                                .padding(top = 10.dp),
+                            text = stringResource(id = R.string.lucky_introduction),
+                            style = MaterialTheme.typography.headlineLarge,
+                            color = MaterialTheme.colors.text1
+                        )
+                    }
                 },
             )
         },
     ) { innerPadding ->
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -118,7 +115,7 @@ fun HomeScreen(
                     .align(Alignment.Center)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(30.dp),
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.lucky),
