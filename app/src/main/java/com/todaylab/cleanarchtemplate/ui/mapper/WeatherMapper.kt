@@ -28,6 +28,7 @@ internal object WeatherMapper : BaseModelMapper<WeatherModel, WeatherState> {
             lon = high.lon,
             main = high.main,
             description = high.description,
+            iconLabel = WeatherState.getIconLabel(high.icon),
             icon = high.icon,
         )
     }

@@ -4,12 +4,21 @@ import android.Manifest
 import android.annotation.SuppressLint
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import coil3.compose.AsyncImage
@@ -83,7 +92,27 @@ fun CurrentWeatherIcon(
         }
     }
 
-    WeatherIcon(weather, modifier)
+    Box(modifier = Modifier.fillMaxWidth()) {
+        when (weather) {
+            is DataResource.Loading -> {
+                if (weather.data != null) WeatherIcon(
+                    weather.data,
+                    Modifier.align(Alignment.CenterEnd)
+                )
+                else Text(
+                    "로딩중",
+                    Modifier.align(Alignment.CenterEnd)
+                )
+            }
+
+            is DataResource.Success -> WeatherIcon(
+                weather.data,
+                Modifier.align(Alignment.CenterEnd)
+            )
+
+            else -> return
+        }
+    }
 }
 
 /**
@@ -92,26 +121,23 @@ fun CurrentWeatherIcon(
  */
 @Composable
 private fun WeatherIcon(
-    weather: DataResource<WeatherState>,
+    weatherState: WeatherState,
     modifier: Modifier = Modifier,
 ) {
-    when (weather) {
-        is DataResource.Loading -> if (weather.data != null) AsyncImage(
-            model = "https://openweathermap.org/img/wn/${weather.data?.icon}@2x.png",
-            contentDescription = weather.data.main,
-            modifier = modifier,
-        ) else Text("Loading...")
-        is DataResource.Empty -> Text("Empty", modifier = modifier)
-        is DataResource.Success -> AsyncImage(
-            model = "https://openweathermap.org/img/wn/${weather.data.icon}@2x.png",
-            contentDescription = weather.data.main,
-            modifier = modifier,
-        )
-        is DataResource.Error -> Text(
-            text = "Error: ${weather.throwable.message}", modifier = modifier
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(2.dp)
+    ) {
+        Text(weatherState.iconLabel, style = MaterialTheme.typography.titleMedium)
+        AsyncImage(
+            model = "https://openweathermap.org/img/wn/${weatherState.icon}@2x.png",
+            contentDescription = weatherState.main,
+            modifier = Modifier.size(40.dp)
         )
     }
 }
+
 
 /**
  * Fetch current location
@@ -132,4 +158,21 @@ private fun fetchLocation(
         Timber.e("fetch location failed - $exception")
         onLocationFetched(null, null)
     }
+}
+
+@Preview
+@Composable
+private fun PreviewWeatherIcon() {
+    WeatherIcon(
+        weatherState =
+            WeatherState(
+                date = java.util.Date(),
+                lat = 0.0,
+                lon = 0.0,
+                main = "clear",
+                description = "clear sky",
+                iconLabel = "맑음",
+                icon = "02d",
+            )
+    )
 }

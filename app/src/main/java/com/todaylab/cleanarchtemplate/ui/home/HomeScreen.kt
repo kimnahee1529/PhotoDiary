@@ -208,6 +208,7 @@ private fun PreviewMainScreen() {
                         lon = 0.0,
                         main = "clear",
                         description = "clear sky",
+                        iconLabel = "맑음",
                         icon = "02d",
                     )
                 ),
