@@ -1,8 +1,7 @@
 package com.todaylab.cleanarchtemplate.ui.home
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,7 +21,7 @@ fun BirthDateInput(
     onDaySelect: (String) -> Unit = { _ -> },
     modifier: Modifier = Modifier
 ) {
-    Row(modifier = modifier) {
+    Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
         WheelSpinnerPicker(
             modifier = Modifier.weight(1f),
             text = year,
@@ -31,7 +30,6 @@ fun BirthDateInput(
             onSpinnerItemSelect = onYearSelect,
             spinnerItems = (1900..2025).map { it.toString() }.reversed()
         )
-        Spacer(modifier = Modifier.width(4.dp))
         WheelSpinnerPicker(
             modifier = Modifier.weight(1f),
             text = month,
@@ -40,7 +38,6 @@ fun BirthDateInput(
             onSpinnerItemSelect = onMonthSelect,
             spinnerItems = (1..12).map { it.toString() }
         )
-        Spacer(modifier = Modifier.width(4.dp))
         WheelSpinnerPicker(
             modifier = Modifier.weight(1f),
             text = day,

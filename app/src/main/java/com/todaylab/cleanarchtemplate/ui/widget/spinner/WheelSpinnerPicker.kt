@@ -65,15 +65,15 @@ fun WheelSpinnerPicker(
             // show placeholder text if text is empty
             Text(
                 text = if (text.isNotBlank()) text else placeholderText,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(horizontal = 12.dp),
                 color = if (text.isNotBlank()) Color.Black else Color.Gray,
             )
         }
-        Spacer(modifier = Modifier.width(2.dp))
+        Spacer(modifier = Modifier.width(12.dp))
         Text(
             text = label,
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.align(Alignment.Bottom),
         )
     }
