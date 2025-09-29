@@ -10,11 +10,11 @@ plugins {
 }
 
 android {
-    namespace = "com.todaylab.cleanarchtemplate"
+    namespace = "com.todaylab.photodiary"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.todaylab.cleanarchtemplate"
+        applicationId = "com.todaylab.photodiary"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
@@ -41,6 +41,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "11"
@@ -99,4 +101,8 @@ dependencies {
     testImplementation(libs.truth)
     testImplementation(libs.okhttp3.mockwebserver)
     testImplementation(libs.mockk)
+
+    implementation(libs.work.runtime.ktx)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
 }

@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "clean-arch-template"
+rootProject.name = "photodiary"
 include(":app")
  

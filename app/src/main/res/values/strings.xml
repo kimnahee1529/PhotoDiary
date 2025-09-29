@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">오늘행운</string>
+    <string name="app_name">하루의 방</string>
 
     <string name="lucky_introduction">오늘 행운을 찾으러 가봐요!</string>
     <string name="lucky_result_question">"오늘 행운의 운세는? ☘"</string>

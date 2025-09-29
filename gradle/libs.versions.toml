@@ -32,7 +32,8 @@ activityVersion = "1.10.1"
 constraintlayout = "2.2.1"
 truth = "1.4.4"
 uiTestManifest = "1.8.3"
-
+desugar-jdk-libs = "2.0.4"
+work = "2.9.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -89,6 +90,8 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activityVersion" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar-jdk-libs" }
+work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 
 [bundles]
 hilt = ["google-dagger-hilt", "hilt-navigation-compose"]
