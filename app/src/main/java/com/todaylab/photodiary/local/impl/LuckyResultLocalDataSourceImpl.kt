@@ -13,7 +13,7 @@ class LuckyResultLocalDataSourceImpl @Inject constructor(
 ) : LuckyResultLocalDataSource {
     override suspend fun getById(id: String): DataResource<LuckyResultEntity> {
         try {
-            val luckyResult = luckyDao.getById(id) ?: return DataResource.empty()
+            val luckyResult = luckyDao.getById(id) ?: return DataResource.loading()
             return DataResource.success(LuckyResultMapper.mapToHigh(luckyResult))
         } catch (e: Exception) {
             return DataResource.error(Throwable("local layer error - ${e.message}"))

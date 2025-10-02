@@ -18,7 +18,7 @@ class WeatherRemoteDataSourceImpl @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.let { body ->
                     DataResource.success(body.toData())
-                } ?: DataResource.empty()
+                } ?: DataResource.loading()
             } else {
                 throw Throwable(response.code().toString())
             }

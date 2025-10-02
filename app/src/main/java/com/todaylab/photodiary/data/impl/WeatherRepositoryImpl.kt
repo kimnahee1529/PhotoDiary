@@ -19,43 +19,47 @@ class WeatherRepositoryImpl @Inject constructor(
     private val weatherRemoteDataSource: WeatherRemoteDataSource,
     private val weatherLocalDataSource: WeatherLocalDataSource
 ) : WeatherRepository {
+    override suspend fun get(): DataResource<Weather> {
+        TODO("Not yet implemented")
+    }
     /**
      * Get singleton weather entity from local
      */
-    override suspend fun get(): DataResource<Weather> {
-        try {
-            val localWeather = weatherLocalDataSource.get()
-            Timber.d("weather repo impl - local weather: ${localWeather}")
-            return localWeather.mapData(WeatherMapper::mapToHigh)
-        } catch (e: Exception) {
-            return DataResource.error(Throwable("data layer error - ${e.message}"))
-        }
-    }
+//    override suspend fun get(): DataResource<Weather> {
+
+//        try {
+//            val localWeather = weatherLocalDataSource.get()
+//            Timber.d("weather repo impl - local weather: ${localWeather}")
+//            return localWeather.mapData(WeatherMapper::mapToHigh)
+//        } catch (e: Exception) {
+//            return DataResource.error(Throwable("data layer error - ${e.message}"))
+//        }
+//    }
 
     /**
      * Get singleton weather entity that matches location
      * If not exists or expired, fetch from remote and save to local
      */
-    override suspend fun getByLocation(lat: Double, lon: Double): DataResource<Weather> {
-        val localWeather = weatherLocalDataSource.getByLocation(lat, lon)
-        Timber.d("weather repo impl - local weather: ${localWeather}")
-        if (localWeather is DataResource.Success) {
-            val expirationTime =
-                System.currentTimeMillis() - WEATHER_EXPIRATION_HOUR.hours.inWholeMilliseconds
-
-            return if (localWeather.data.date.time >= expirationTime) {
-                Timber.d("local weather has not expired")
-                DataResource.success(WeatherMapper.mapToHigh(localWeather.data))
-            } else {
-                Timber.d("local weather has expired")
-                DataResource.empty()
-            }
-        }
-
-        val remoteWeather = weatherRemoteDataSource.getWeather(lat, lon)
-        Timber.d("weather repo impl - remote weather: ${remoteWeather}")
-        return remoteWeather.mapData(WeatherMapper::mapToHigh)
-    }
+//    override suspend fun getByLocation(lat: Double, lon: Double): DataResource<Weather> {
+//        val localWeather = weatherLocalDataSource.getByLocation(lat, lon)
+//        Timber.d("weather repo impl - local weather: ${localWeather}")
+//        if (localWeather is DataResource.Success) {
+//            val expirationTime =
+//                System.currentTimeMillis() - WEATHER_EXPIRATION_HOUR.hours.inWholeMilliseconds
+//
+//            return if (localWeather.data.date.time >= expirationTime) {
+//                Timber.d("local weather has not expired")
+//                DataResource.success(WeatherMapper.mapToHigh(localWeather.data))
+//            } else {
+//                Timber.d("local weather has expired")
+//                DataResource.empty()
+//            }
+//        }
+//
+//        val remoteWeather = weatherRemoteDataSource.getWeather(lat, lon)
+//        Timber.d("weather repo impl - remote weather: ${remoteWeather}")
+//        return remoteWeather.mapData(WeatherMapper::mapToHigh)
+//    }
 
     override suspend fun save(item: Weather): Boolean {
         return try {
@@ -73,5 +77,12 @@ class WeatherRepositoryImpl @Inject constructor(
             Timber.e("data layer error - ${e.message}")
             false
         }
+    }
+
+    override suspend fun getByLocation(
+        lat: Double,
+        lon: Double
+    ): DataResource<Weather> {
+        TODO("Not yet implemented")
     }
 }

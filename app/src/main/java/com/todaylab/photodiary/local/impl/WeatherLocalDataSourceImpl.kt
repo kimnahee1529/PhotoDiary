@@ -13,7 +13,7 @@ class WeatherLocalDataSourceImpl @Inject constructor(
 ) : WeatherLocalDataSource {
     override suspend fun get(): DataResource<WeatherEntity> {
         try {
-            val savedWeather = weatherDao.get() ?: return DataResource.empty()
+            val savedWeather = weatherDao.get() ?: return DataResource.loading()
             return DataResource.success(WeatherMapper.mapToHigh(savedWeather))
         } catch (e: Exception) {
             return DataResource.error(Throwable("local layer error - ${e.message}"))
@@ -22,7 +22,7 @@ class WeatherLocalDataSourceImpl @Inject constructor(
 
     override suspend fun getByLocation(lat: Double, lon: Double): DataResource<WeatherEntity> {
         try {
-            val savedWeather = weatherDao.getByLocation(lat, lon) ?: return DataResource.empty()
+            val savedWeather = weatherDao.getByLocation(lat, lon) ?: return DataResource.loading()
             return DataResource.success(WeatherMapper.mapToHigh(savedWeather))
         } catch (e: Exception) {
             return DataResource.error(Throwable("local layer error - ${e.message}"))

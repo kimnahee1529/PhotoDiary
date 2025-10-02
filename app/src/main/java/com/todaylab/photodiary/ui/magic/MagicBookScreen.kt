@@ -226,7 +226,7 @@ fun MagicBookScreen(
                     ) { state ->
                         when (state) {
                             "effect" -> {
-                                Timber.d("Crossfade: effect")
+//                                Timber.d("Crossfade: effect")
                                 Image(
                                     painter = painterResource(R.drawable.img_magic_book_effect),
                                     contentDescription = null,
@@ -236,7 +236,7 @@ fun MagicBookScreen(
                             }
 
                             "text" -> {
-                                Timber.d("Crossfade: text")
+//                                Timber.d("Crossfade: text")
                                 Text(
                                     text = uiState.solution,
                                     style = MaterialTheme.typo.gowunH1,
@@ -246,7 +246,7 @@ fun MagicBookScreen(
                             }
 
                             else -> {
-                                Timber.d("Crossfade: empty")
+//                                Timber.d("Crossfade: empty")
                                 Box(Modifier.size(0.dp))
                             }
                         }

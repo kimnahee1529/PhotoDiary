@@ -6,7 +6,6 @@ import javax.inject.Inject
 class GetSolutionByMagicBookUseCase @Inject constructor(
     private val magicBookRepository: MagicBookRepository
 ) {
-    suspend operator fun invoke(): String {
-        return magicBookRepository.getSolution()
-    }
+    suspend operator fun invoke() =
+        magicBookRepository.getSolution()
 }

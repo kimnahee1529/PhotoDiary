@@ -6,6 +6,6 @@ import com.todaylab.photodiary.ui.mapper.WeatherMapper
 import com.todaylab.photodiary.ui.model.HomeScreenState
 
 internal fun HomeScreenModel.toUi() = HomeScreenState(
-    weather = weather.mapData(WeatherMapper::mapToLow),
-    birthDate = birthDate.mapData(BirthDateMapper::mapToLow),
+//    weather = weather.mapData(WeatherMapper::mapToLow),
+//    birthDate = birthDate.mapData(BirthDateMapper::mapToLow),
 )

@@ -4,6 +4,9 @@ import com.todaylab.photodiary.data.model.WeatherEntity
 import com.todaylab.photodiary.remote.model.response.WeatherResponse
 import java.util.Date
 
+interface RemoteMapper<DataModel> {
+    fun toData(): DataModel
+}
 internal fun WeatherResponse.toData(): WeatherEntity {
     return WeatherEntity(
         date = Date(), // set current date

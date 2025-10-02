@@ -16,38 +16,44 @@ class MagicBookLocalDataSourceImpl @Inject constructor(
     private val userPreferenceManager: UserPreferenceManager,
 ) : MagicBookLocalDataSource {
 
-    override suspend fun getAll(): DataResource<List<String>> {
-        TODO("Not yet implemented")
-//        try {
-//            val solution = userPreferenceManager.readMagicBookSolution()
-//            return
-//        } catch (e: Exception) {
-//            return DataResource.error(Throwable("local layer error - ${e.message}"))
-//        }
-    }
-
-    suspend fun getSolution(): DataResource<String> {
-        TODO("Not yet implemented")
-//        val solution = userPreferenceManager.readMagicBookSolution()
-//        return solution
-    }
-
-    override fun loadSolutions(): List<Solution> {
+    override suspend fun loadSolutions(): List<Solution> {
         val inputStream = context.resources.openRawResource(R.raw.magic_book_solutions)
         val jsonString = inputStream.bufferedReader().use { it.readText() }
         return Json.decodeFromString(jsonString)
     }
+//    override suspend fun getAll(): DataResource<List<String>> {
+//        TODO("Not yet implemented")
+////        try {
+////            val solution = userPreferenceManager.readMagicBookSolution()
+////            return
+////        } catch (e: Exception) {
+////            return DataResource.error(Throwable("local layer error - ${e.message}"))
+////        }
+//    }
+//
+//    suspend fun getSolution(): DataResource<String> {
+//        TODO("Not yet implemented")
+////        val solution = userPreferenceManager.readMagicBookSolution()
+////        return solution
+//    }
+//
+//    override fun loadSolutions(): List<Solution> {
+//        val inputStream = context.resources.openRawResource(R.raw.magic_book_solutions)
+//        val jsonString = inputStream.bufferedReader().use { it.readText() }
+//        return Json.decodeFromString(jsonString)
+//    }
+//
+//    override suspend fun getById(id: String): DataResource<String> {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override suspend fun save(item: String): Boolean {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override suspend fun delete(item: String): Boolean {
+//        TODO("Not yet implemented")
+//    }
 
-    override suspend fun getById(id: String): DataResource<String> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun save(item: String): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun delete(item: String): Boolean {
-        TODO("Not yet implemented")
-    }
 
 }

@@ -135,18 +135,18 @@ class HomeViewModel
         lat: Double,
         lon: Double,
     ) {
-        viewModelScopeEH.launch(Dispatchers.IO) {
-//            _weather.update {
-//                DataResource.loading(it.getDataOrNull())
-//            }
-            val result = getWeatherByLocation(lat, lon)
-                .mapData(WeatherMapper::mapToLow) // WeatherModel
-
-            val state = result.getDataOrNull()?.toState()
-                ?: WeatherState(WeatherType.ETC) // 실패 시 기본값
-
-            _weather.value = state
-        }
+//        viewModelScopeEH.launch(Dispatchers.IO) {
+////            _weather.update {
+////                DataResource.loading(it.getDataOrNull())
+////            }
+//            val result = getWeatherByLocation(lat, lon)
+//                .mapData(WeatherMapper::mapToLow) // WeatherModel
+//
+//            val state = result.getDataOrNull()?.toState()
+//                ?: WeatherState(WeatherType.ETC) // 실패 시 기본값
+//
+//            _weather.value = state
+//        }
     }
 
     fun saveDiary(
