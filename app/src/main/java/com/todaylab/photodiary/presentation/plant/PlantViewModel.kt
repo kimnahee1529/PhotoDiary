@@ -3,10 +3,10 @@ package com.todaylab.photodiary.presentation.plant
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.todaylab.photodiary.core.UserPreferenceManager
-import com.todaylab.photodiary.domain.usecase.GetSolutionByMagicBookUseCase
+import com.todaylab.photodiary.domain.impl.GetSolutionByMagicBookUseCase
 import com.todaylab.photodiary.presentation.BaseViewModel
-import com.todaylab.photodiary.presentation.plant.PlantViewModel.PlantUiState
 import com.todaylab.photodiary.presentation.diary.TimeType
+import com.todaylab.photodiary.presentation.plant.PlantViewModel.PlantUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

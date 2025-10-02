@@ -3,12 +3,11 @@ package com.todaylab.photodiary.presentation.diary
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.todaylab.photodiary.domain.impl.GetDiaryListUseCase
+import com.todaylab.photodiary.domain.impl.GetDiaryUseCase
+import com.todaylab.photodiary.domain.impl.SaveDiaryUseCase
 import com.todaylab.photodiary.domain.model.Diary
 import com.todaylab.photodiary.domain.model.WeatherType
-import com.todaylab.photodiary.domain.usecase.GetDiaryListUseCase
-import com.todaylab.photodiary.domain.usecase.GetDiaryUseCase
-import com.todaylab.photodiary.domain.usecase.GetLuckyResultByIdUseCase
-import com.todaylab.photodiary.domain.usecase.SaveDiaryUseCase
 import com.todaylab.photodiary.presentation.BaseViewModel
 import com.todaylab.photodiary.presentation.diary.DiaryViewModel.DiaryUiState
 import com.todaylab.photodiary.presentation.mapper.DiaryMapper
@@ -57,7 +56,12 @@ class DiaryViewModel
         ) { roomId, successCreateRoom, selectedPhotos, selectedDate ->
             Partial(roomId, successCreateRoom, selectedPhotos, selectedDate)
         }.let { partialFlow ->
-            combine(partialFlow, _selectedWakeTime, _selectedBedTime, _diaryList) { p, wakeTime, bedTime, diaryList ->
+            combine(
+                partialFlow,
+                _selectedWakeTime,
+                _selectedBedTime,
+                _diaryList
+            ) { p, wakeTime, bedTime, diaryList ->
                 DiaryUiState(
                     roomId = p.roomId,
                     successCreateRoom = p.successCreateRoom,
@@ -95,7 +99,7 @@ class DiaryViewModel
         }
     }
 
-    fun loadDiaryList(){
+    fun loadDiaryList() {
         viewModelScope.launch {
             try {
                 val diaries = getDiaryListUseCase()

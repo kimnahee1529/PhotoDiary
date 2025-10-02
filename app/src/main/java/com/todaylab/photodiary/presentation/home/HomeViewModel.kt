@@ -3,15 +3,15 @@ package com.todaylab.photodiary.presentation.home
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.todaylab.photodiary.core.UserPreferenceManager
+import com.todaylab.photodiary.domain.impl.GetWeatherByLocationUseCase
+import com.todaylab.photodiary.domain.impl.SaveDiaryUseCase
 import com.todaylab.photodiary.domain.model.WeatherType
-import com.todaylab.photodiary.domain.usecase.GetWeatherByLocationUseCase
-import com.todaylab.photodiary.domain.usecase.SaveDiaryUseCase
 import com.todaylab.photodiary.presentation.BaseViewModel
+import com.todaylab.photodiary.presentation.diary.TimeType
 import com.todaylab.photodiary.presentation.home.HomeViewModel.HomeUiState
 import com.todaylab.photodiary.presentation.mapper.DiaryMapper
 import com.todaylab.photodiary.presentation.mapper.WeatherMapper
 import com.todaylab.photodiary.presentation.model.DiaryModel
-import com.todaylab.photodiary.presentation.diary.TimeType
 import com.todaylab.photodiary.ui.mapper.toState
 import com.todaylab.photodiary.ui.model.WeatherState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -44,7 +44,8 @@ class HomeViewModel
 ) : BaseViewModel<HomeUiState>(savedStateHandle) {
 
     private val _roomId = MutableStateFlow<Int?>(-1)
-//    private val _successCreateRoom = MutableStateFlow<Boolean>(false)
+
+    //    private val _successCreateRoom = MutableStateFlow<Boolean>(false)
 //    private val _selectedPhotos = MutableStateFlow<List<Uri>>(emptyList())
 //    private val _selectedDate = MutableStateFlow(LocalDate.now())
 //    private val _selectedWakeTime = MutableStateFlow(LocalTime.of(7, 0))
@@ -62,7 +63,7 @@ class HomeViewModel
         combine(
             _roomId,
             _date
-        ) { roomId, date->
+        ) { roomId, date ->
             Partial(roomId, date)
         }.let { partialFlow ->
             combine(
@@ -114,7 +115,7 @@ class HomeViewModel
         }
     }
 
-    fun getDate(){
+    fun getDate() {
         val today = LocalDate.now()
         val formatter = DateTimeFormatter.ofPattern("M월 d일", Locale.KOREAN)
         val formatted = today.format(formatter)

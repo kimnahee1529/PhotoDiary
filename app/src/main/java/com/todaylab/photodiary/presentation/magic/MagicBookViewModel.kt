@@ -3,10 +3,10 @@ package com.todaylab.photodiary.presentation.magic
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.todaylab.photodiary.core.UserPreferenceManager
-import com.todaylab.photodiary.domain.usecase.GetSolutionByMagicBookUseCase
+import com.todaylab.photodiary.domain.impl.GetSolutionByMagicBookUseCase
 import com.todaylab.photodiary.presentation.BaseViewModel
-import com.todaylab.photodiary.presentation.magic.MagicBookViewModel.MagicBookUiState
 import com.todaylab.photodiary.presentation.diary.TimeType
+import com.todaylab.photodiary.presentation.magic.MagicBookViewModel.MagicBookUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +28,7 @@ class MagicBookViewModel
     savedStateHandle: SavedStateHandle,
     private val userPrefs: UserPreferenceManager,
     private val getSolutionUseCase: GetSolutionByMagicBookUseCase,
-) : BaseViewModel<MagicBookUiState>(savedStateHandle){
+) : BaseViewModel<MagicBookUiState>(savedStateHandle) {
 
     private val today = LocalDate.now().toString()
     private val _solution = MutableStateFlow<String>("처음해답")
@@ -64,7 +64,7 @@ class MagicBookViewModel
         }
     }
 
-    suspend fun getSolution(){
+    suspend fun getSolution() {
         val solution = getSolutionUseCase.invoke()
         userPrefs.saveTodaySolution(today, solution)
         _solution.value = solution
